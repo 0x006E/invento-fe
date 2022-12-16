@@ -1,10 +1,10 @@
-import { Text } from "@mantine/core";
+import { Outlet } from "react-router-dom";
 import DashboardLayout from "../../layouts/DashboardLayout";
 
 export default function Home() {
   return (
     <DashboardLayout>
-      <Text>Resize app to see responsive navbar in action</Text>
+      <Outlet />
     </DashboardLayout>
   );
 }

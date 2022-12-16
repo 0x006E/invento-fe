@@ -15,7 +15,7 @@ import { SwitchToggle } from "./DashboardLayout/_switchToggle";
 import { User } from "./DashboardLayout/_user";
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+  const { colorScheme } = useMantineColorScheme();
   const theme = useMantineTheme();
   const [opened, setOpened] = useState(false);
   return (

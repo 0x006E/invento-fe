@@ -4,15 +4,30 @@ import {
   MantineProvider,
 } from "@mantine/core";
 import { useHotkeys, useLocalStorage } from "@mantine/hooks";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
 import ErrorPage from "./pages/ErrorPage/ErrorPage";
 import Home from "./pages/Home";
+import Products from "./pages/Products";
 import "./reset.css";
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Home />,
     errorElement: <ErrorPage />,
+    children: [
+      {
+        index: true,
+        element: <Navigate to="products" />,
+      },
+      {
+        path: "products",
+        element: <Products />,
+      },
+    ],
   },
 ]);
 

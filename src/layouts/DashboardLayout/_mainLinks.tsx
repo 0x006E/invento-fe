@@ -1,12 +1,16 @@
-import { Group, Text, ThemeIcon, UnstyledButton } from "@mantine/core";
+import { NavLink, ThemeIcon } from "@mantine/core";
 import {
-  IconAlertCircle,
-  IconDatabase,
-  IconGitPullRequest,
-  IconMessages,
+  IconBuilding,
+  IconBuildingStore,
+  IconCar,
+  IconCurrencyRupee,
+  IconFriends,
+  IconLocation,
+  IconPin,
+  IconUsers,
 } from "@tabler/icons";
 import React from "react";
-import { Link } from "react-router-dom";
+import { NavLink as N, useMatch, useResolvedPath } from "react-router-dom";
 
 interface MainLinkProps {
   icon: React.ReactNode;
@@ -16,61 +20,71 @@ interface MainLinkProps {
 }
 
 function MainLink({ icon, color, label, to }: MainLinkProps) {
+  let resolved = useResolvedPath(to);
+  let match = useMatch({ path: resolved.pathname, end: true });
   return (
-    <UnstyledButton
-      sx={(theme) => ({
-        display: "block",
-        width: "100%",
-        padding: theme.spacing.xs,
-        borderRadius: theme.radius.sm,
-        color:
-          theme.colorScheme === "dark" ? theme.colors.dark[0] : theme.black,
-
-        "&:hover": {
-          backgroundColor:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[6]
-              : theme.colors.gray[0],
-        },
-      })}
-      component={Link}
+    <NavLink
+      component={N}
       to={to}
-    >
-      <Group>
+      label={label}
+      icon={
         <ThemeIcon color={color} variant="light">
           {icon}
         </ThemeIcon>
-
-        <Text size="sm">{label}</Text>
-      </Group>
-    </UnstyledButton>
+      }
+      active={match ? true : false}
+    ></NavLink>
   );
 }
 
 const data = [
   {
-    icon: <IconGitPullRequest size={16} />,
+    icon: <IconBuildingStore size={16} />,
     color: "blue",
     label: "Products",
     to: "/products",
   },
   {
-    icon: <IconAlertCircle size={16} />,
-    color: "teal",
-    label: "Customers",
-    to: "/customers",
-  },
-  {
-    icon: <IconMessages size={16} />,
+    icon: <IconCar size={16} />,
     color: "violet",
-    label: "Discussions",
-    to: "/discussions",
+    label: "Vehicles",
+    to: "/vehicles",
   },
   {
-    icon: <IconDatabase size={16} />,
+    icon: <IconUsers size={16} />,
+    color: "teal",
+    label: "Employees",
+    to: "/employees",
+  },
+  {
+    icon: <IconLocation size={16} />,
     color: "grape",
-    label: "Databases",
-    to: "/databases",
+    label: "Locations",
+    to: "/location",
+  },
+  {
+    icon: <IconBuilding size={16} />,
+    color: "blue",
+    label: "Warehouses",
+    to: "/warehouses",
+  },
+  {
+    icon: <IconFriends size={16} />,
+    color: "violet",
+    label: "People",
+    to: "/people",
+  },
+  {
+    icon: <IconCurrencyRupee size={16} />,
+    color: "teal",
+    label: "Sales",
+    to: "/sales",
+  },
+  {
+    icon: <IconPin size={16} />,
+    color: "grape",
+    label: "Trips",
+    to: "/trips",
   },
 ];
 
