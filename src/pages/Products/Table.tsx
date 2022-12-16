@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Group, TextInput } from "@mantine/core";
+import { Box, Button, Flex, Grid, Group, TextInput } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import {
@@ -71,7 +71,7 @@ export default function SearchingAndFilteringExample() {
   return (
     <>
       <Grid align="center" mb="md">
-        <Grid.Col xs={11}>
+        <Flex w={"100%"} gap={20}>
           <TextInput
             sx={{ flexBasis: "100%" }}
             placeholder="Search products..."
@@ -79,15 +79,13 @@ export default function SearchingAndFilteringExample() {
             value={query}
             onChange={(e) => setQuery(e.currentTarget.value)}
           />
-        </Grid.Col>
-        <Grid.Col xs={1}>
-          <Button variant="filled">
+          <Button variant="filled" sx={{ flexShrink: 0 }}>
             <Group position="apart" spacing={"xs"}>
               <IconPlus size={18} />
               Add
             </Group>
           </Button>
-        </Grid.Col>
+        </Flex>
       </Grid>
       <Box sx={{ height: "60vh" }}>
         <DataTable
