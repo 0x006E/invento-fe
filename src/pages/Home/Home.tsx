@@ -1,5 +1,10 @@
-function Home() {
-  return <div>Home</div>;
-}
+import { Text } from "@mantine/core";
+import DashboardLayout from "../../layouts/DashboardLayout";
 
-export default Home;
+export default function Home() {
+  return (
+    <DashboardLayout>
+      <Text>Resize app to see responsive navbar in action</Text>
+    </DashboardLayout>
+  );
+}
