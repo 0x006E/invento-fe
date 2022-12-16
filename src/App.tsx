@@ -3,7 +3,7 @@ import {
   ColorSchemeProvider,
   MantineProvider,
 } from "@mantine/core";
-import { useHotkeys, useLocalStorage } from "@mantine/hooks";
+import { useColorScheme, useHotkeys, useLocalStorage } from "@mantine/hooks";
 import {
   createBrowserRouter,
   Navigate,
@@ -32,9 +32,10 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+  const preferredColorScheme = useColorScheme();
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
     key: "mantine-color-scheme",
-    defaultValue: "light",
+    defaultValue: preferredColorScheme,
     getInitialValueInEffect: true,
   });
 
