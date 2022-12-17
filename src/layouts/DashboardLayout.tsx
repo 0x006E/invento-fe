@@ -35,7 +35,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
           p="md"
           hiddenBreakpoint="sm"
           hidden={!opened}
-          width={{ sm: 200, lg: 300 }}
+          width={{ sm: 200 }}
         >
           <Navbar.Section grow mt="xs">
             <MainLinks />
@@ -58,7 +58,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
       //     </Footer>
       //   }
       header={
-        <Header height={{ base: 70 }} p="md">
+        <Header height={{ base: 55 }} p="md">
           <Group sx={{ height: "100%" }} px={20} position="apart">
             <Logo colorScheme={colorScheme} />
             <Group>

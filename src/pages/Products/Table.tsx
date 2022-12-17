@@ -70,7 +70,7 @@ export default function SearchingAndFilteringExample() {
 
   return (
     <>
-      <Grid align="center" mb="md">
+      <Grid align="center" m={0} mb="xs">
         <Flex w={"100%"} gap={20}>
           <TextInput
             sx={{ flexBasis: "100%" }}
