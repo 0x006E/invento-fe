@@ -13,6 +13,7 @@ import {
 import ErrorPage from "./pages/ErrorPage/ErrorPage";
 import Home from "./pages/Home";
 import Products from "./pages/Products";
+import Vehicles from "./pages/Vehicles";
 import "./reset.css";
 const router = createBrowserRouter([
   {
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
       {
         path: "products",
         element: <Products />,
+      },
+      {
+        path: "vehicles",
+        element: <Vehicles />,
       },
     ],
   },
