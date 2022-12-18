@@ -6,6 +6,6 @@ export interface Product {
   price: number;
 }
 
-const ProductCrudService = new CrudService<Product>("/api/products");
+const ProductCrudService = new CrudService<Product>("/api/product");
 
 export default ProductCrudService;

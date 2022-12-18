@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosResponse } from "axios";
+import axios, { AxiosInstance } from "axios";
 import { PagedResponse } from "./PagedResponse";
 
 export class CrudService<T> {
@@ -9,40 +9,21 @@ export class CrudService<T> {
     });
   }
 
-  async getAll(
-    size: number,
-    page: number
-  ): Promise<AxiosResponse<PagedResponse<T>, any>> {
-    const response = await this.#axiosInstance.get<PagedResponse<T>>(
+  getAll(size: number, page: number) {
+    return this.#axiosInstance.get<PagedResponse<T>>(
       `/?size=${size}&page=${page}`
     );
-    return response;
   }
-  async get(id: string): Promise<T> {
-    const response = await fetch(`${this.url}/${id}`);
-    return response.json();
+  get(id: string) {
+    return this.#axiosInstance.get(`${this.url}/${id}`);
   }
-  async create(data: T): Promise<AxiosResponse<T>> {
-    const response = await this.#axiosInstance.post<T>("/", {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    return response;
+  create(data: T) {
+    return this.#axiosInstance.post<T>("/", data);
   }
-  async update(id: string, data: T): Promise<AxiosResponse<T>> {
-    const response = await this.#axiosInstance.put<T>(`/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    return response;
+  update(id: string, data: T) {
+    return this.#axiosInstance.put<T>(`/${id}`, data);
   }
-  async delete(id: string): Promise<void> {
-    await this.#axiosInstance.delete(`/${id}`, {
-      method: "DELETE",
-    });
+  delete(id: string) {
+    return this.#axiosInstance.delete(`/${id}`);
   }
 }
