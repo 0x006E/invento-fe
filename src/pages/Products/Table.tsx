@@ -11,25 +11,29 @@ import {
 import { orderBy } from "lodash";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useEffect, useState } from "react";
-const initialRecords = new Array(100).fill(0).map((_, index) => {
-  return {
-    id: index,
-    name: `Name ${index}`,
-    price: Math.floor(Math.random() * 1000),
-  };
-});
+import { Product } from "../../api/Product";
+import useProducts from "../../hooks/Products";
+
 const PAGE_SIZES = [10, 15, 20];
 export default function SearchingAndFilteringExample() {
   const [pageSize, setPageSize] = useState(PAGE_SIZES[1]);
   const [page, setPage] = useState(1);
-  const [records, setRecords] = useState(initialRecords.slice(0, pageSize));
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
     columnAccessor: "name",
     direction: "asc",
   });
+  const { products } = useProducts(pageSize);
+  const { data, isLoading, isError } = products(page);
+  const [records, setRecords] = useState<Product[]>([]);
+
+  useEffect(() => {
+    if (data) {
+      setRecords(data?.content);
+    }
+  }, [data, isLoading]);
 
   const handleSortStatusChange = (status: DataTableSortStatus) => {
-    setPage(1);
+    // setPage(1);
     setSortStatus(status);
     setRecords((currentRecords) => {
       const sortedRecords = orderBy(
@@ -42,19 +46,11 @@ export default function SearchingAndFilteringExample() {
   };
   const [query, setQuery] = useState("");
   const [debouncedQuery] = useDebouncedValue(query, 200);
-  const [selectedRecords, setSelectedRecords] = useState<typeof initialRecords>(
-    []
-  );
-
-  useEffect(() => {
-    const from = (page - 1) * pageSize;
-    const to = from + pageSize;
-    setRecords(initialRecords.slice(from, to));
-  }, [page, pageSize]);
+  const [selectedRecords, setSelectedRecords] = useState<Product[]>([]);
 
   useEffect(() => {
     setRecords(
-      initialRecords.filter(({ name, price }) => {
+      data?.content.filter(({ name, price }) => {
         if (
           debouncedQuery !== "" &&
           !`${name} ${price}`
@@ -64,7 +60,7 @@ export default function SearchingAndFilteringExample() {
           return false;
         }
         return true;
-      })
+      }) ?? []
     );
   }, [debouncedQuery]);
 
@@ -88,18 +84,19 @@ export default function SearchingAndFilteringExample() {
         </Flex>
       </Grid>
       <Box sx={{ height: "60vh" }}>
-        <DataTable
+        <DataTable<Product>
           withBorder
           borderRadius="sm"
           withColumnBorders
           striped
+          fetching={isLoading}
           verticalAlignment="top"
           records={records}
           sortStatus={sortStatus}
           onSortStatusChange={handleSortStatusChange}
           selectedRecords={selectedRecords}
           onSelectedRecordsChange={setSelectedRecords}
-          totalRecords={initialRecords.length}
+          totalRecords={data?.totalElements ?? 0}
           recordsPerPage={pageSize}
           page={page}
           onPageChange={(p) => setPage(p)}

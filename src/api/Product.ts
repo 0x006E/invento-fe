@@ -1,11 +1,10 @@
 import { CrudService } from "./CrudSevice";
 
 export interface Product {
-  id?: string;
+  id: string;
   name: string;
   price: number;
 }
 
-const ProductCrudService = new CrudService<Product>("/api/product");
-
+const ProductCrudService = CrudService<Product>("/api/product");
 export default ProductCrudService;

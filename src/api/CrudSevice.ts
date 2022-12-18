@@ -1,29 +1,27 @@
-import axios, { AxiosInstance } from "axios";
+import axios from "axios";
 import { PagedResponse } from "./PagedResponse";
 
-export class CrudService<T> {
-  #axiosInstance: AxiosInstance;
-  constructor(private url: string) {
-    this.#axiosInstance = axios.create({
-      baseURL: url,
-    });
-  }
-
-  getAll(size: number, page: number) {
-    return this.#axiosInstance.get<PagedResponse<T>>(
-      `/?size=${size}&page=${page}`
-    );
-  }
-  get(id: string) {
-    return this.#axiosInstance.get(`${this.url}/${id}`);
-  }
-  create(data: T) {
-    return this.#axiosInstance.post<T>("/", data);
-  }
-  update(id: string, data: T) {
-    return this.#axiosInstance.put<T>(`/${id}`, data);
-  }
-  delete(id: string) {
-    return this.#axiosInstance.delete(`/${id}`);
-  }
+export function CrudService<T>(url: string) {
+  const axiosInstance = axios.create({
+    baseURL: url,
+  });
+  return {
+    axiosInstance: axiosInstance,
+    url: url,
+    getAll: (size: number, page: number) => {
+      return axiosInstance.get<PagedResponse<T>>(`/?size=${size}&page=${page}`);
+    },
+    get: (id: string) => {
+      return axiosInstance.get(`/${id}`);
+    },
+    create: (data: Omit<T, "id">) => {
+      return axiosInstance.post<T>("/", data);
+    },
+    update: (id: string, data: T) => {
+      return axiosInstance.put<T>(`/${id}`, data);
+    },
+    delete: (id: string) => {
+      return axiosInstance.delete(`/${id}`);
+    },
+  };
 }
