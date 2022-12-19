@@ -1,4 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import { ErrorResponse } from "../api/ErrorResponse";
 import { PagedResponse } from "../api/PagedResponse";
 import ProductCrudService, { Product } from "../api/Product";
 
@@ -15,7 +17,7 @@ export default function useProducts(size: number) {
 
   const products = (page: number, query = "") => {
     const isQuery = query.length > 0;
-    return useQuery<PagedResponse<Product>, Error>({
+    return useQuery<PagedResponse<Product>, AxiosError<ErrorResponse>>({
       queryKey: ["products", page, query],
       queryFn: async () => {
         if (isQuery) {
@@ -30,7 +32,7 @@ export default function useProducts(size: number) {
   };
 
   const product = (id: string) =>
-    useQuery<Product, Error>({
+    useQuery<Product, AxiosError<ErrorResponse>>({
       queryKey: ["product", id],
       queryFn: async () => {
         const { data } = await g(id);
@@ -38,40 +40,25 @@ export default function useProducts(size: number) {
       },
     });
 
-  const add = useMutation<Product, Error, Product>(
+  const add = useMutation<Product, AxiosError<ErrorResponse>, Product>(
     async (product) => {
       const { id, ...rest } = product;
       const { data } = await c(rest);
       return data;
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["products", size, 1]);
-      },
     }
   );
-  const update = useMutation<Product, Error, Product>(
+  const update = useMutation<Product, AxiosError<ErrorResponse>, Product>(
     async (product) => {
       if (!product.id) throw new Error("Product id is required");
       const { data } = await u(product.id, product);
       return data;
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["products", size, 1]);
-      },
     }
   );
-  const remove = useMutation<Product, Error, string>(
+  const remove = useMutation<Product, AxiosError<ErrorResponse>, string>(
     async (id) => {
       if (!id || id === "") throw new Error("Product id is required");
       const { data } = await d(id);
       return data;
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["products", size, 1]);
-      },
     }
   );
 
