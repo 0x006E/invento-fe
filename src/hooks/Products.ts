@@ -1,11 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { ErrorResponse } from "../api/ErrorResponse";
 import { PagedResponse } from "../api/PagedResponse";
 import ProductCrudService, { Product } from "../api/Product";
 
 export default function useProducts(size: number) {
-  const queryClient = useQueryClient();
   const {
     getAll: gA,
     get: g,
@@ -18,7 +17,7 @@ export default function useProducts(size: number) {
   const products = (page: number, query = "") => {
     const isQuery = query.length > 0;
     return useQuery<PagedResponse<Product>, AxiosError<ErrorResponse>>({
-      queryKey: ["products", page, query],
+      queryKey: ["products", page, size, query],
       queryFn: async () => {
         if (isQuery) {
           const { data } = await s(size, page, query);
