@@ -32,7 +32,7 @@ export default function useVehicles(size: number) {
 
   const vehicle = (id: string) =>
     useQuery<Vehicle, AxiosError<ErrorResponse>>({
-      queryKey: ["product", id],
+      queryKey: ["vehicle", id],
       queryFn: async () => {
         const { data } = await g(id);
         return data;
@@ -40,22 +40,22 @@ export default function useVehicles(size: number) {
     });
 
   const add = useMutation<Vehicle, AxiosError<ErrorResponse>, Vehicle>(
-    async (product) => {
-      const { id, ...rest } = product;
+    async (vehicle) => {
+      const { id, ...rest } = vehicle;
       const { data } = await c(rest);
       return data;
     }
   );
   const update = useMutation<Vehicle, AxiosError<ErrorResponse>, Vehicle>(
-    async (product) => {
-      if (!product.id) throw new Error("Product id is required");
-      const { data } = await u(product.id, product);
+    async (vehicle) => {
+      if (!vehicle.id) throw new Error("vehicle id is required");
+      const { data } = await u(vehicle);
       return data;
     }
   );
   const remove = useMutation<Vehicle, AxiosError<ErrorResponse>, string>(
     async (id) => {
-      if (!id || id === "") throw new Error("Product id is required");
+      if (!id || id === "") throw new Error("vehicle id is required");
       const { data } = await d(id);
       return data;
     }

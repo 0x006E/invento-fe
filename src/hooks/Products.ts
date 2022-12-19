@@ -49,7 +49,7 @@ export default function useProducts(size: number) {
   const update = useMutation<Product, AxiosError<ErrorResponse>, Product>(
     async (product) => {
       if (!product.id) throw new Error("Product id is required");
-      const { data } = await u(product.id, product);
+      const { data } = await u(product);
       return data;
     }
   );

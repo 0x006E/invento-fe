@@ -22,8 +22,8 @@ export class CrudService<T> {
   create = (data: Omit<T, "id">) => {
     return this.axiosInstance.post<T>("/", data);
   };
-  update = (id: string, data: T) => {
-    return this.axiosInstance.put<T>(`/${id}`, data);
+  update = (data: T) => {
+    return this.axiosInstance.put<T>(`/`, data);
   };
   delete = (id: string) => {
     return this.axiosInstance.delete(`/${id}`);
