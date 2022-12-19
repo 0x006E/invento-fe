@@ -13,27 +13,83 @@ import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useEffect, useState } from "react";
 import { Product } from "../../api/Product";
 import useProducts from "../../hooks/Products";
+import AddEdit from "./AddEdit";
 
 const PAGE_SIZES = [10, 15, 20];
+const emptyProduct = {
+  id: "",
+  name: "",
+  price: 0,
+};
+
 export default function ProductTable() {
   const [pageSize, setPageSize] = useState(PAGE_SIZES[1]);
   const [page, setPage] = useState(1);
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
-    columnAccessor: "name",
+    columnAccessor: "",
     direction: "asc",
   });
   const [query, setQuery] = useState("");
   const [debouncedQuery] = useDebouncedValue(query, 200);
 
-  const { products, remove } = useProducts(pageSize);
-  const { data, isLoading, isError } = products(page, debouncedQuery);
+  const { products, add, remove, update } = useProducts(pageSize);
+  const { data, isFetching, isError, refetch } = products(page, debouncedQuery);
+  const { mutate: addMutate, isLoading: isAddLoading } = add;
+  const { mutate: updateMutate, isLoading: isUpdateLoading } = update;
+
   const [records, setRecords] = useState<Product[]>([]);
+  const [open, setOpen] = useState(false);
+  const [isAdd, setIsAdd] = useState(true);
+  const [initialValues, setInitialValues] = useState<Product>({
+    ...emptyProduct,
+  });
 
   useEffect(() => {
     if (data) {
       setRecords(data?.content);
     }
-  }, [data, isLoading]);
+  }, [data, isFetching]);
+
+  const handleAdd = async (values: Product) => {
+    setOpen(false);
+    addMutate(values, {
+      onSuccess: () => {
+        showNotification({
+          title: "Success",
+          message: "Product added successfully",
+          color: "green",
+        });
+        refetch();
+      },
+      onError: (error) => {
+        showNotification({
+          title: "Error",
+          message: error?.response?.data?.message ?? "Something went wrong",
+          color: "red",
+        });
+      },
+    });
+  };
+  const handleEdit = async (values: Product) => {
+    setOpen(false);
+    updateMutate(values, {
+      onSuccess: () => {
+        showNotification({
+          title: "Success",
+          message: "Product edited successfully",
+          color: "green",
+        });
+        refetch();
+      },
+      onError: (error) => {
+        showNotification({
+          title: "Error",
+          message: error?.response?.data?.message ?? "Something went wrong",
+          color: "red",
+        });
+      },
+    });
+  };
 
   const handleSortStatusChange = (status: DataTableSortStatus) => {
     // setPage(1);
@@ -60,7 +116,15 @@ export default function ProductTable() {
             value={query}
             onChange={(e) => setQuery(e.currentTarget.value)}
           />
-          <Button variant="filled" sx={{ flexShrink: 0 }}>
+          <Button
+            variant="filled"
+            sx={{ flexShrink: 0 }}
+            onClick={() => {
+              setIsAdd(true);
+              setInitialValues({ ...emptyProduct });
+              setOpen(true);
+            }}
+          >
             <Group position="apart" spacing={"xs"}>
               <IconPlus size={18} />
               Add
@@ -74,7 +138,7 @@ export default function ProductTable() {
           borderRadius="sm"
           withColumnBorders
           striped
-          fetching={isLoading}
+          fetching={isFetching || isAddLoading || isUpdateLoading}
           verticalAlignment="top"
           records={records}
           sortStatus={sortStatus}
@@ -106,11 +170,11 @@ export default function ProductTable() {
                 key: "edit",
                 icon: <IconEdit size={14} />,
                 title: `Edit ${name}`,
-                onClick: () =>
-                  showNotification({
-                    color: "orange",
-                    message: `Should edit ${name}}`,
-                  }),
+                onClick: () => {
+                  setInitialValues({ id, name, price });
+                  setIsAdd(false);
+                  setOpen(true);
+                },
               },
               {
                 key: "delete",
@@ -143,6 +207,13 @@ export default function ProductTable() {
               },
             ],
           }}
+        />
+        <AddEdit
+          opened={open}
+          onClose={() => setOpen(false)}
+          initialValues={initialValues}
+          isAdd={isAdd}
+          onSubmit={isAdd ? handleAdd : handleEdit}
         />
       </Box>
     </>
