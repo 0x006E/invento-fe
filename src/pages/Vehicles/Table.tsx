@@ -22,8 +22,8 @@ export default function SearchingAndFilteringExample() {
     columnAccessor: "name",
     direction: "asc",
   });
-  const { products } = useVehicles(pageSize);
-  const { data, isLoading, isError } = products(page);
+  const { vehicles } = useVehicles(pageSize);
+  const { data, isLoading, isError } = vehicles(page);
   const [records, setRecords] = useState<Vehicle[]>([]);
 
   useEffect(() => {
