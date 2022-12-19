@@ -5,5 +5,13 @@ export interface Vehicle {
   number: string;
   type: string;
 }
-const VehicleCrudService = CrudService<Vehicle>("/api/vehicle");
-export default VehicleCrudService;
+
+export class VehicleCrudService extends CrudService<Vehicle> {
+  constructor() {
+    super("/api/vehicle");
+  }
+}
+
+const VehicleCrudServiceInstance = new VehicleCrudService();
+
+export default VehicleCrudServiceInstance;

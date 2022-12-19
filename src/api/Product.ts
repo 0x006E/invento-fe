@@ -6,5 +6,12 @@ export interface Product {
   price: number;
 }
 
-const ProductCrudService = CrudService<Product>("/api/product");
-export default ProductCrudService;
+export class ProductCrudService extends CrudService<Product> {
+  constructor() {
+    super("/api/product");
+  }
+}
+
+const ProductCrudServiceInstance = new ProductCrudService();
+
+export default ProductCrudServiceInstance;

@@ -4,6 +4,7 @@ import {
   MantineProvider,
 } from "@mantine/core";
 import { useColorScheme, useHotkeys, useLocalStorage } from "@mantine/hooks";
+import { NotificationsProvider } from "@mantine/notifications";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   createBrowserRouter,
@@ -15,6 +16,7 @@ import Home from "./pages/Home";
 import Products from "./pages/Products";
 import Vehicles from "./pages/Vehicles";
 import "./reset.css";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -61,7 +63,9 @@ function App() {
           withNormalizeCSS
           theme={{ colorScheme }}
         >
-          <RouterProvider router={router} />
+          <NotificationsProvider>
+            <RouterProvider router={router} />
+          </NotificationsProvider>
         </MantineProvider>
       </ColorSchemeProvider>
     </QueryClientProvider>

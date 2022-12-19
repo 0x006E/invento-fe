@@ -15,15 +15,18 @@ import { Product } from "../../api/Product";
 import useProducts from "../../hooks/Products";
 
 const PAGE_SIZES = [10, 15, 20];
-export default function SearchingAndFilteringExample() {
+export default function ProductTable() {
   const [pageSize, setPageSize] = useState(PAGE_SIZES[1]);
   const [page, setPage] = useState(1);
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
     columnAccessor: "name",
     direction: "asc",
   });
-  const { products } = useProducts(pageSize);
-  const { data, isLoading, isError } = products(page);
+  const [query, setQuery] = useState("");
+  const [debouncedQuery] = useDebouncedValue(query, 200);
+
+  const { products, remove } = useProducts(pageSize);
+  const { data, isLoading, isError } = products(page, debouncedQuery);
   const [records, setRecords] = useState<Product[]>([]);
 
   useEffect(() => {
@@ -44,25 +47,7 @@ export default function SearchingAndFilteringExample() {
       return sortedRecords;
     });
   };
-  const [query, setQuery] = useState("");
-  const [debouncedQuery] = useDebouncedValue(query, 200);
   const [selectedRecords, setSelectedRecords] = useState<Product[]>([]);
-
-  useEffect(() => {
-    setRecords(
-      data?.content.filter(({ name, price }) => {
-        if (
-          debouncedQuery !== "" &&
-          !`${name} ${price}`
-            .toLowerCase()
-            .includes(debouncedQuery.trim().toLowerCase())
-        ) {
-          return false;
-        }
-        return true;
-      }) ?? []
-    );
-  }, [debouncedQuery]);
 
   return (
     <>
@@ -132,11 +117,14 @@ export default function SearchingAndFilteringExample() {
                 title: `Delete ${name} `,
                 icon: <IconTrashX size={14} />,
                 color: "red",
-                onClick: () =>
+                onClick: () => {
+                  console.log(id);
+                  remove.mutate(id);
                   showNotification({
                     color: "red",
                     message: `Should delete ${price}`,
-                  }),
+                  });
+                },
               },
               { key: "divider-1", divider: true },
               {

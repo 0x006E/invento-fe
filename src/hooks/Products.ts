@@ -10,13 +10,21 @@ export default function useProducts(size: number) {
     create: c,
     update: u,
     delete: d,
+    search: s,
   } = ProductCrudService;
-  const products = (page: number) => {
+
+  const products = (page: number, query = "") => {
+    const isQuery = query.length > 0;
     return useQuery<PagedResponse<Product>, Error>({
-      queryKey: ["products", size, page],
+      queryKey: ["products", page, query],
       queryFn: async () => {
-        const { data } = await gA(size, page);
-        return data;
+        if (isQuery) {
+          const { data } = await s(size, page, query);
+          return data;
+        } else {
+          const { data } = await gA(size, page);
+          return data;
+        }
       },
     });
   };
@@ -29,6 +37,7 @@ export default function useProducts(size: number) {
         return data;
       },
     });
+
   const add = useMutation<Product, Error, Product>(
     async (product) => {
       const { id, ...rest } = product;
@@ -37,7 +46,7 @@ export default function useProducts(size: number) {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(["products", size, 0]);
+        queryClient.invalidateQueries(["products", size, 1]);
       },
     }
   );
@@ -49,19 +58,19 @@ export default function useProducts(size: number) {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(["products", size, 0]);
+        queryClient.invalidateQueries(["products", size, 1]);
       },
     }
   );
   const remove = useMutation<Product, Error, string>(
     async (id) => {
-      if (id) throw new Error("Product id is required");
+      if (!id || id === "") throw new Error("Product id is required");
       const { data } = await d(id);
       return data;
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(["products", size, 0]);
+        queryClient.invalidateQueries(["products", size, 1]);
       },
     }
   );
