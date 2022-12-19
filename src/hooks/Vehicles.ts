@@ -1,74 +1,69 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import { ErrorResponse } from "../api/ErrorResponse";
 import { PagedResponse } from "../api/PagedResponse";
 import VehicleCrudService, { Vehicle } from "../api/Vehicle";
 
 export default function useVehicles(size: number) {
-  const queryClient = useQueryClient();
   const {
     getAll: gA,
     get: g,
     create: c,
     update: u,
     delete: d,
+    search: s,
   } = VehicleCrudService;
-  const products = (page: number) => {
-    return useQuery<PagedResponse<Vehicle>, Error>({
-      queryKey: ["vehicles", size, page],
+
+  const vehicles = (page: number, query = "") => {
+    const isQuery = query.length > 0;
+    return useQuery<PagedResponse<Vehicle>, AxiosError<ErrorResponse>>({
+      queryKey: ["vehicles", page, size, query],
       queryFn: async () => {
-        const { data } = await gA(size, page);
-        return data;
+        if (isQuery) {
+          const { data } = await s(size, page, query);
+          return data;
+        } else {
+          const { data } = await gA(size, page);
+          return data;
+        }
       },
     });
   };
 
-  const product = (id: string) =>
-    useQuery<Vehicle, Error>({
+  const vehicle = (id: string) =>
+    useQuery<Vehicle, AxiosError<ErrorResponse>>({
       queryKey: ["product", id],
       queryFn: async () => {
         const { data } = await g(id);
         return data;
       },
     });
-  const add = useMutation<Vehicle, Error, Vehicle>(
+
+  const add = useMutation<Vehicle, AxiosError<ErrorResponse>, Vehicle>(
     async (product) => {
       const { id, ...rest } = product;
       const { data } = await c(rest);
       return data;
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["vehicles", size, 0]);
-      },
     }
   );
-  const update = useMutation<Vehicle, Error, Vehicle>(
+  const update = useMutation<Vehicle, AxiosError<ErrorResponse>, Vehicle>(
     async (product) => {
-      if (!product.id) throw new Error("Vehicle id is required");
+      if (!product.id) throw new Error("Product id is required");
       const { data } = await u(product.id, product);
       return data;
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["vehicles", size, 0]);
-      },
     }
   );
-  const remove = useMutation<Vehicle, Error, string>(
+  const remove = useMutation<Vehicle, AxiosError<ErrorResponse>, string>(
     async (id) => {
-      if (id) throw new Error("Vehicle id is required");
+      if (!id || id === "") throw new Error("Product id is required");
       const { data } = await d(id);
       return data;
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["vehicles", size, 0]);
-      },
     }
   );
 
   return {
-    products,
-    product,
+    vehicles,
+    vehicle,
     add,
     update,
     remove,
