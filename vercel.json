@@ -1,6 +1,5 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/" },
     {
       "source": "/api/:path*",
       "destination": "https://invento-server-production.up.railway.app/api/:path*"
@@ -8,6 +7,7 @@
     {
       "source": "/api/:path*/",
       "destination": "https://invento-server-production.up.railway.app/api/:path*/"
-    }
+    },
+    { "source": "/(.*)", "destination": "/" }
   ]
 }
