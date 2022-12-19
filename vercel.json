@@ -2,8 +2,12 @@
   "rewrites": [
     { "source": "/(.*)", "destination": "/" },
     {
-      "source": "/api/(.*)",
-      "destination": "https://invento-server-production.up.railway.app/api/"
+      "source": "/api/:path*",
+      "destination": "https://invento-server-production.up.railway.app/api/:path*"
+    },
+    {
+      "source": "/api/:path*/",
+      "destination": "https://invento-server-production.up.railway.app/api/:path*/"
     }
   ]
 }
