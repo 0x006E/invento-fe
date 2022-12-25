@@ -1,8 +1,15 @@
-import { Button, Group, Modal, ModalProps, TextInput } from "@mantine/core";
-import { useForm } from "@mantine/form";
+import {
+  Button,
+  Group,
+  Modal,
+  ModalProps,
+  NativeSelect,
+  TextInput,
+} from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { clone } from "lodash";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { Vehicle } from "../../api/Vehicle";
 import useVehicles from "../../hooks/Vehicles";
 
@@ -13,6 +20,12 @@ export interface AddEditProps extends Omit<ModalProps, "onSubmit"> {
   onSubmit: (values: Vehicle) => void;
 }
 
+const vehicleType = [
+  { value: "car", label: "Car" },
+  { value: "truck", label: "Truck" },
+  { value: "auto", label: "Auto" },
+];
+
 function AddEdit(props: AddEditProps) {
   const { isUnique } = useVehicles();
   const { mutate, isLoading } = isUnique;
@@ -20,7 +33,7 @@ function AddEdit(props: AddEditProps) {
   const {
     initialValues = {
       id: "",
-      type: "",
+      type: "car",
       number: "",
     },
     isAdd = true,
@@ -28,35 +41,36 @@ function AddEdit(props: AddEditProps) {
     isEdit: isEditProp,
     ...rest
   } = props;
-  const form = useForm({
-    initialValues: clone(initialValues),
-    validate: {
-      type: (value) =>
-        value.length < 3 ? "Type must have at least 3 letters" : null,
-      number: (value) =>
-        value.length < 5 ? "Number must be atleast 5 letters" : null,
-    },
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isDirty, dirtyFields },
+    reset,
+  } = useForm({
+    defaultValues: clone(initialValues),
   });
 
   useEffect(() => {
     if (!props.opened) return;
     setisEdit(!isEditProp);
-    form.reset();
-    form.setValues(clone(initialValues));
-    form.resetTouched();
-    form.resetDirty();
+    reset(initialValues);
     return () => {
-      form.reset();
+      reset();
     };
   }, [props.opened]);
 
-  const handleSubmit = (values: Vehicle) => {
+  const handleFormSubmit = (values: Vehicle) => {
     if (isEdit)
-      if (form.isDirty("number")) {
+      if ("number" in dirtyFields) {
         mutate(values.number, {
           onSuccess: (isUnique) => {
             if (!isUnique) onSubmit(values);
-            else form.setFieldError("name", "Name already exists");
+            else
+              setError("number", {
+                type: "custom",
+                message: "Number already exists",
+              });
           },
           onError: (error) => {
             showNotification({
@@ -73,25 +87,33 @@ function AddEdit(props: AddEditProps) {
   const isEditWindow = !(isEdit || isAdd);
   return (
     <Modal title={isAdd ? "Add Vehicle" : "Edit Vehicle"} centered {...rest}>
-      <form onSubmit={form.onSubmit(handleSubmit)}>
-        <TextInput
-          placeholder="ID"
-          hidden
-          readOnly
-          {...form.getInputProps("id")}
-        />
-        <TextInput
+      <form onSubmit={handleSubmit(handleFormSubmit)}>
+        <TextInput placeholder="ID" hidden readOnly {...register("id")} />
+        <NativeSelect
           label="Type"
           placeholder="Type"
-          {...(isEditWindow && { readOnly: true })}
-          {...form.getInputProps("type")}
+          data={vehicleType}
+          {...register("type", {
+            required: "Type is required",
+          })}
+          {...(isEditWindow && { disabled: true })}
+          error={errors.type?.message}
+          withAsterisk
         />
         <TextInput
           mt="md"
           label="Number"
-          placeholder="Number"
-          {...(isEditWindow && { readOnly: true })}
-          {...form.getInputProps("number")}
+          placeholder="Enter number with spaces instead of hyphens"
+          {...(isEditWindow && { disabled: true })}
+          {...register("number", {
+            required: "Number is required",
+            pattern: {
+              value: /^[A-Z]{2}[ -][0-9]{1,2}(?: [A-Z])?(?: [A-Z]*)? [0-9]{4}$/,
+              message: "Vehicle Number is not of valid format",
+            },
+          })}
+          error={errors.number?.message}
+          withAsterisk
         />
 
         <Group position="apart" mt="xl">
@@ -103,7 +125,7 @@ function AddEdit(props: AddEditProps) {
               type="submit"
               variant="filled"
               loading={isLoading}
-              disabled={!isAdd && !form.isDirty()}
+              disabled={!isAdd && !isDirty}
             >
               {isAdd ? "Add" : "Save"}
             </Button>

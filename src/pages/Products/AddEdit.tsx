@@ -1,8 +1,8 @@
 import { Button, Group, Modal, ModalProps, TextInput } from "@mantine/core";
-import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { clone } from "lodash";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { Product } from "../../api/Product";
 import useProducts from "../../hooks/Products";
 
@@ -28,34 +28,36 @@ function AddEdit(props: AddEditProps) {
     isEdit: isEditProp,
     ...rest
   } = props;
-  const form = useForm({
-    initialValues: clone(initialValues),
-    validate: {
-      name: (value) =>
-        value.length < 3 ? "Name must have at least 3 letters" : null,
-      price: (value) => (isNaN(value) ? "You must provide a number" : null),
-    },
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isDirty, dirtyFields },
+    reset,
+  } = useForm({
+    defaultValues: clone(initialValues),
   });
 
   useEffect(() => {
     if (!props.opened) return;
     setisEdit(!isEditProp);
-    form.reset();
-    form.setValues(clone(initialValues));
-    form.resetTouched();
-    form.resetDirty();
+    reset(initialValues);
     return () => {
-      form.reset();
+      reset(initialValues);
     };
   }, [props.opened]);
 
-  const handleSubmit = (values: Product) => {
+  const handleFormSubmit = (values: Product) => {
     if (isEdit)
-      if (form.isDirty("name")) {
+      if ("name" in dirtyFields) {
         mutate(values.name, {
           onSuccess: (isUnique) => {
             if (!isUnique) onSubmit(values);
-            else form.setFieldError("name", "Name already exists");
+            else
+              setError("name", {
+                type: "custom",
+                message: "Name already exists",
+              });
           },
           onError: (error) => {
             showNotification({
@@ -72,25 +74,38 @@ function AddEdit(props: AddEditProps) {
   const isEditWindow = !(isEdit || isAdd);
   return (
     <Modal title={isAdd ? "Add Product" : "Edit Product"} centered {...rest}>
-      <form onSubmit={form.onSubmit(handleSubmit)}>
+      <form onSubmit={handleSubmit(handleFormSubmit)}>
         <TextInput
           placeholder="ID"
           hidden
           readOnly
-          {...form.getInputProps("id")}
+          {...register("id", { required: true })}
+          error={errors.id?.message}
         />
         <TextInput
           label="Name"
           placeholder="Name"
-          {...(isEditWindow && { readOnly: true })}
-          {...form.getInputProps("name")}
+          {...(isEditWindow && { disabled: true })}
+          {...register("name", {
+            required: "Name is required",
+            minLength: 3,
+          })}
+          error={errors.name?.message}
+          withAsterisk
         />
         <TextInput
           mt="md"
           label="Price"
           placeholder="Price"
-          {...(isEditWindow && { readOnly: true })}
-          {...form.getInputProps("price")}
+          {...(isEditWindow && { disabled: true })}
+          {...register("price", {
+            valueAsNumber: true,
+            required: "Price is required",
+            min: 0,
+            validate: (value) => value > 0 || "Price must be a valid number",
+          })}
+          error={errors.price?.message}
+          withAsterisk
         />
 
         <Group position="apart" mt="xl">
@@ -102,7 +117,7 @@ function AddEdit(props: AddEditProps) {
               type="submit"
               variant="filled"
               loading={isLoading}
-              disabled={!isAdd && !form.isDirty()}
+              disabled={!isAdd && !isDirty}
             >
               {isAdd ? "Add" : "Save"}
             </Button>

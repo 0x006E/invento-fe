@@ -2,7 +2,6 @@ import { Box, Button, Flex, Grid, Group, TextInput } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { IconEdit, IconPlus, IconSearch } from "@tabler/icons";
-import { orderBy } from "lodash";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useEffect, useState } from "react";
 import { Vehicle } from "../../api/Vehicle";
@@ -12,7 +11,7 @@ import AddEdit from "./AddEdit";
 const PAGE_SIZES = [10, 15, 20];
 const emptyVehicle = {
   id: "",
-  type: "",
+  type: "car",
   number: "",
 };
 
@@ -93,14 +92,6 @@ export default function VehicleTable() {
   const handleSortStatusChange = (status: DataTableSortStatus) => {
     setPage(1);
     setSortStatus(status);
-    setRecords((currentRecords) => {
-      const sortedRecords = orderBy(
-        currentRecords,
-        status.columnAccessor,
-        status.direction
-      );
-      return sortedRecords;
-    });
   };
 
   return (
