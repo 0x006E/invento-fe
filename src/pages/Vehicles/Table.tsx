@@ -1,4 +1,12 @@
-import { Box, Button, Flex, Grid, Group, TextInput } from "@mantine/core";
+import {
+  Box,
+  Button,
+  Flex,
+  Grid,
+  Group,
+  Loader,
+  TextInput,
+} from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { IconEdit, IconPlus, IconSearch } from "@tabler/icons";
@@ -19,14 +27,14 @@ export default function VehicleTable() {
   const [pageSize, setPageSize] = useState(PAGE_SIZES[1]);
   const [page, setPage] = useState(1);
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
-    columnAccessor: "",
+    columnAccessor: "id",
     direction: "asc",
   });
   const [query, setQuery] = useState("");
   const [debouncedQuery] = useDebouncedValue(query, 200);
 
   const { vehicles, add, remove, update } = useVehicles(pageSize);
-  const { data, isFetching, isError, refetch } = vehicles(
+  const { data, isFetching, isLoading, isError, refetch } = vehicles(
     page,
     debouncedQuery,
     sortStatus.columnAccessor as keyof Vehicle,
@@ -120,6 +128,16 @@ export default function VehicleTable() {
               Add
             </Group>
           </Button>
+          <Flex
+            sx={{
+              flexShrink: 0,
+              opacity: isFetching || isAddLoading || isUpdateLoading ? 1 : 0,
+            }}
+            justify="center"
+            align={"center"}
+          >
+            <Loader size={25} />
+          </Flex>
         </Flex>
       </Grid>
       <Box sx={{ height: "60vh" }}>
@@ -128,7 +146,7 @@ export default function VehicleTable() {
           borderRadius="sm"
           withColumnBorders
           striped
-          fetching={isFetching || isAddLoading || isUpdateLoading}
+          fetching={isLoading}
           verticalAlignment="top"
           records={records}
           sortStatus={sortStatus}
