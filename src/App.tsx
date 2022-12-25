@@ -13,6 +13,7 @@ import {
 } from "react-router-dom";
 import ErrorPage from "./pages/ErrorPage/ErrorPage";
 import Home from "./pages/Home";
+import Locations from "./pages/Locations";
 import Products from "./pages/Products";
 import Vehicles from "./pages/Vehicles";
 import Warehouses from "./pages/Warehouses";
@@ -39,6 +40,10 @@ const router = createBrowserRouter([
       {
         path: "warehouses",
         element: <Warehouses />,
+      },
+      {
+        path: "locations",
+        element: <Locations />,
       },
     ],
   },

@@ -13,12 +13,12 @@ import { IconEdit, IconPlus, IconSearch } from "@tabler/icons";
 import { cloneDeep } from "lodash";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useEffect, useState } from "react";
-import { Warehouse } from "../../api/Warehouse";
-import useWarehouses from "../../hooks/Warehouses";
+import { Location } from "../../api/Location";
+import useLocations from "../../hooks/Locations";
 import AddEdit from "./AddEdit";
 
 const PAGE_SIZES = [10, 15, 20];
-const emptyWarehouse = {
+const emptyLocation = {
   id: "",
   name: "",
   address: {
@@ -30,7 +30,7 @@ const emptyWarehouse = {
   },
 };
 
-export default function WarehousesTable() {
+export default function LocationsTable() {
   const [pageSize, setPageSize] = useState(PAGE_SIZES[1]);
   const [page, setPage] = useState(1);
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
@@ -40,23 +40,23 @@ export default function WarehousesTable() {
   const [query, setQuery] = useState("");
   const [debouncedQuery] = useDebouncedValue(query, 200);
 
-  const { warehouses, add, remove, update } = useWarehouses(pageSize);
-  const { data, isLoading, isFetching, isError, refetch } = warehouses(
+  const { locations, add, remove, update } = useLocations(pageSize);
+  const { data, isFetching, isLoading, isError, refetch } = locations(
     page,
     debouncedQuery,
-    sortStatus.columnAccessor as keyof Warehouse,
+    sortStatus.columnAccessor as keyof Location,
     sortStatus.direction
   );
   const { mutate: addMutate, isLoading: isAddLoading } = add;
   const { mutate: updateMutate, isLoading: isUpdateLoading } = update;
 
-  const [records, setRecords] = useState<Warehouse[]>([]);
+  const [records, setRecords] = useState<Location[]>([]);
   const [open, setOpen] = useState(false);
   const [isAdd, setIsAdd] = useState(true);
-  const [initialValues, setInitialValues] = useState<Warehouse>(
-    cloneDeep(emptyWarehouse)
+  const [initialValues, setInitialValues] = useState<Location>(
+    cloneDeep(emptyLocation)
   );
-  const [selectedRecords, setSelectedRecords] = useState<Warehouse[]>([]);
+  const [selectedRecords, setSelectedRecords] = useState<Location[]>([]);
 
   useEffect(() => {
     if (data) {
@@ -64,13 +64,13 @@ export default function WarehousesTable() {
     }
   }, [data, isFetching]);
 
-  const handleAdd = async (values: Warehouse) => {
+  const handleAdd = async (values: Location) => {
     setOpen(false);
     addMutate(values, {
       onSuccess: () => {
         showNotification({
           title: "Success",
-          message: "Warehouse added successfully",
+          message: "Location added successfully",
           color: "green",
         });
         refetch();
@@ -84,13 +84,13 @@ export default function WarehousesTable() {
       },
     });
   };
-  const handleEdit = async (values: Warehouse) => {
+  const handleEdit = async (values: Location) => {
     setOpen(false);
     updateMutate(values, {
       onSuccess: () => {
         showNotification({
           title: "Success",
-          message: "Warehouse edited successfully",
+          message: "Location edited successfully",
           color: "green",
         });
         refetch();
@@ -117,7 +117,7 @@ export default function WarehousesTable() {
         <Flex w={"100%"} gap={20}>
           <TextInput
             sx={{ flexBasis: "100%" }}
-            placeholder="Search warehouses..."
+            placeholder="Search locations..."
             icon={<IconSearch size={16} />}
             value={query}
             onChange={(e) => setQuery(e.currentTarget.value)}
@@ -127,7 +127,7 @@ export default function WarehousesTable() {
             sx={{ flexShrink: 0 }}
             onClick={() => {
               setIsAdd(true);
-              setInitialValues({ ...emptyWarehouse });
+              setInitialValues({ ...emptyLocation });
               setOpen(true);
             }}
           >
@@ -149,7 +149,7 @@ export default function WarehousesTable() {
         </Flex>
       </Grid>
       <Box sx={{ height: "60vh" }}>
-        <DataTable<Warehouse>
+        <DataTable<Location>
           withBorder
           borderRadius="sm"
           withColumnBorders

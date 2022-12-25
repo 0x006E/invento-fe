@@ -60,7 +60,7 @@ const data = [
     icon: <IconLocation size={16} />,
     color: "grape",
     label: "Locations",
-    to: "/location",
+    to: "/locations",
   },
   {
     icon: <IconBuilding size={16} />,
