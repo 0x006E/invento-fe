@@ -100,7 +100,7 @@ export default function VehicleTable() {
         <Flex w={"100%"} gap={20}>
           <TextInput
             sx={{ flexBasis: "100%" }}
-            placeholder="Search products..."
+            placeholder="Search vehicles..."
             icon={<IconSearch size={16} />}
             value={query}
             onChange={(e) => setQuery(e.currentTarget.value)}
