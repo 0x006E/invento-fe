@@ -11,9 +11,16 @@ export class CrudService<T> {
     });
     this.url = url;
   }
-  getAll = (size: number, page: number) => {
+  getAll = (
+    size: number,
+    page: number,
+    sortColumn: keyof T,
+    sortDirection: "asc" | "desc"
+  ) => {
     return this.axiosInstance.get<PagedResponse<T>>(
-      `/?size=${size}&page=${page}`
+      `/?size=${size}&page=${page}&sortColumn=${String(
+        sortColumn
+      )}&sortDirection=${sortDirection}`
     );
   };
   get = (id: string) => {
@@ -28,9 +35,17 @@ export class CrudService<T> {
   delete = (id: string) => {
     return this.axiosInstance.delete(`/${id}`);
   };
-  search = (size: number, page: number, query: string) => {
+  search = (
+    size: number,
+    page: number,
+    query: string,
+    sortColumn: keyof T,
+    sortDirection: "asc" | "desc"
+  ) => {
     return this.axiosInstance.get<PagedResponse<T>>(
-      `/search?size=${size}&page=${page}&name=${query}`
+      `/search?name=${query}&size=${size}&page=${page}&sortColumn=${String(
+        sortColumn
+      )}&sortDirection=${sortDirection}`
     );
   };
 }

@@ -10,6 +10,9 @@ export class ProductCrudService extends CrudService<Product> {
   constructor() {
     super("/api/product");
   }
+  isUnique = (name: string) => {
+    return this.axiosInstance.get<boolean>(`/name-exists/${name}`);
+  };
 }
 
 const ProductCrudServiceInstance = new ProductCrudService();

@@ -3,25 +3,25 @@ import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { clone } from "lodash";
 import { useEffect, useState } from "react";
-import { Product } from "../../api/Product";
-import useProducts from "../../hooks/Products";
+import { Vehicle } from "../../api/Vehicle";
+import useVehicles from "../../hooks/Vehicles";
 
 export interface AddEditProps extends Omit<ModalProps, "onSubmit"> {
-  initialValues: Product;
+  initialValues: Vehicle;
   isAdd: boolean;
   isEdit?: boolean;
-  onSubmit: (values: Product) => void;
+  onSubmit: (values: Vehicle) => void;
 }
 
 function AddEdit(props: AddEditProps) {
-  const { isUnique } = useProducts();
+  const { isUnique } = useVehicles();
   const { mutate, isLoading } = isUnique;
   const [isEdit, setisEdit] = useState(props.isEdit);
   const {
     initialValues = {
       id: "",
-      name: "",
-      price: 0,
+      type: "",
+      number: "",
     },
     isAdd = true,
     onSubmit,
@@ -31,9 +31,10 @@ function AddEdit(props: AddEditProps) {
   const form = useForm({
     initialValues: clone(initialValues),
     validate: {
-      name: (value) =>
-        value.length < 3 ? "Name must have at least 3 letters" : null,
-      price: (value) => (isNaN(value) ? "You must provide a number" : null),
+      type: (value) =>
+        value.length < 3 ? "Type must have at least 3 letters" : null,
+      number: (value) =>
+        value.length < 5 ? "Number must be atleast 5 letters" : null,
     },
   });
 
@@ -49,10 +50,10 @@ function AddEdit(props: AddEditProps) {
     };
   }, [props.opened]);
 
-  const handleSubmit = (values: Product) => {
+  const handleSubmit = (values: Vehicle) => {
     if (isEdit)
-      if (form.isDirty("name")) {
-        mutate(values.name, {
+      if (form.isDirty("number")) {
+        mutate(values.number, {
           onSuccess: (isUnique) => {
             if (!isUnique) onSubmit(values);
             else form.setFieldError("name", "Name already exists");
@@ -71,7 +72,7 @@ function AddEdit(props: AddEditProps) {
   };
   const isEditWindow = !(isEdit || isAdd);
   return (
-    <Modal title={isAdd ? "Add Product" : "Edit Product"} centered {...rest}>
+    <Modal title={isAdd ? "Add Vehicle" : "Edit Vehicle"} centered {...rest}>
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <TextInput
           placeholder="ID"
@@ -80,17 +81,17 @@ function AddEdit(props: AddEditProps) {
           {...form.getInputProps("id")}
         />
         <TextInput
-          label="Name"
-          placeholder="Name"
+          label="Type"
+          placeholder="Type"
           {...(isEditWindow && { readOnly: true })}
-          {...form.getInputProps("name")}
+          {...form.getInputProps("type")}
         />
         <TextInput
           mt="md"
-          label="Price"
-          placeholder="Price"
+          label="Number"
+          placeholder="Number"
           {...(isEditWindow && { readOnly: true })}
-          {...form.getInputProps("price")}
+          {...form.getInputProps("number")}
         />
 
         <Group position="apart" mt="xl">

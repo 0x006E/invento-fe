@@ -4,7 +4,11 @@ import { ErrorResponse } from "../api/ErrorResponse";
 import { PagedResponse } from "../api/PagedResponse";
 import ProductCrudService, { Product } from "../api/Product";
 
-export default function useProducts(size: number) {
+export default function useProducts(
+  size = 15,
+  sortColumn: keyof Product = "id",
+  sortDirection: "asc" | "desc" = "asc"
+) {
   const {
     getAll: gA,
     get: g,
@@ -12,18 +16,25 @@ export default function useProducts(size: number) {
     update: u,
     delete: d,
     search: s,
+    isUnique: iU,
   } = ProductCrudService;
 
   const products = (page: number, query = "") => {
     const isQuery = query.length > 0;
     return useQuery<PagedResponse<Product>, AxiosError<ErrorResponse>>({
-      queryKey: ["products", page, size, query],
+      queryKey: ["products", page, size, query, sortColumn, sortDirection],
       queryFn: async () => {
         if (isQuery) {
-          const { data } = await s(size, page, query);
+          const { data } = await s(
+            size,
+            page,
+            query,
+            sortColumn,
+            sortDirection
+          );
           return data;
         } else {
-          const { data } = await gA(size, page);
+          const { data } = await gA(size, page, sortColumn, sortDirection);
           return data;
         }
       },
@@ -61,11 +72,19 @@ export default function useProducts(size: number) {
     }
   );
 
+  const isUnique = useMutation<boolean, AxiosError<ErrorResponse>, string>(
+    async (name) => {
+      const { data } = await iU(name);
+      return data;
+    }
+  );
+
   return {
     products,
     product,
     add,
     update,
     remove,
+    isUnique,
   };
 }

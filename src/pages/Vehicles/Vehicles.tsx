@@ -1,7 +1,7 @@
 import { Divider, Stack, Title } from "@mantine/core";
 import Table from "./Table";
 
-function Products() {
+function Vehicles() {
   return (
     <Stack m={40} h={"100%"} sx={{ maxWidth: "100%", overflowY: "auto" }}>
       <Title order={1}>Vehicles</Title>
@@ -11,4 +11,4 @@ function Products() {
   );
 }
 
-export default Products;
+export default Vehicles;

@@ -1,39 +1,97 @@
 import { Box, Button, Flex, Grid, Group, TextInput } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
-import {
-  IconEdit,
-  IconPlus,
-  IconSearch,
-  IconTrash,
-  IconTrashX,
-} from "@tabler/icons";
+import { IconEdit, IconPlus, IconSearch } from "@tabler/icons";
 import { orderBy } from "lodash";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useEffect, useState } from "react";
 import { Vehicle } from "../../api/Vehicle";
 import useVehicles from "../../hooks/Vehicles";
+import AddEdit from "./AddEdit";
 
 const PAGE_SIZES = [10, 15, 20];
-export default function SearchingAndFilteringExample() {
+const emptyVehicle = {
+  id: "",
+  type: "",
+  number: "",
+};
+
+export default function VehicleTable() {
   const [pageSize, setPageSize] = useState(PAGE_SIZES[1]);
   const [page, setPage] = useState(1);
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
-    columnAccessor: "name",
+    columnAccessor: "",
     direction: "asc",
   });
-  const { vehicles } = useVehicles(pageSize);
-  const { data, isLoading, isError } = vehicles(page);
+  const [query, setQuery] = useState("");
+  const [debouncedQuery] = useDebouncedValue(query, 200);
+
+  const { vehicles, add, remove, update } = useVehicles(
+    pageSize,
+    sortStatus.columnAccessor as keyof Vehicle,
+    sortStatus.direction
+  );
+  const { data, isFetching, isError, refetch } = vehicles(page, debouncedQuery);
+  const { mutate: addMutate, isLoading: isAddLoading } = add;
+  const { mutate: updateMutate, isLoading: isUpdateLoading } = update;
+
   const [records, setRecords] = useState<Vehicle[]>([]);
+  const [open, setOpen] = useState(false);
+  const [isAdd, setIsAdd] = useState(true);
+  const [initialValues, setInitialValues] = useState<Vehicle>({
+    ...emptyVehicle,
+  });
+  const [selectedRecords, setSelectedRecords] = useState<Vehicle[]>([]);
 
   useEffect(() => {
     if (data) {
       setRecords(data?.content);
     }
-  }, [data, isLoading]);
+  }, [data, isFetching]);
+
+  const handleAdd = async (values: Vehicle) => {
+    setOpen(false);
+    addMutate(values, {
+      onSuccess: () => {
+        showNotification({
+          title: "Success",
+          message: "Vehicle added successfully",
+          color: "green",
+        });
+        refetch();
+      },
+      onError: (error) => {
+        showNotification({
+          title: "Error",
+          message: error?.response?.data?.message ?? "Something went wrong",
+          color: "red",
+        });
+      },
+    });
+  };
+  const handleEdit = async (values: Vehicle) => {
+    setOpen(false);
+    updateMutate(values, {
+      onSuccess: () => {
+        showNotification({
+          title: "Success",
+          message: "Vehicle edited successfully",
+          color: "green",
+        });
+        refetch();
+      },
+      onError: (error) => {
+        showNotification({
+          title: "Error",
+          message: error?.response?.data?.message ?? "Something went wrong",
+          color: "red",
+        });
+      },
+    });
+  };
 
   const handleSortStatusChange = (status: DataTableSortStatus) => {
-    // setPage(1);
+    setPage(1);
     setSortStatus(status);
     setRecords((currentRecords) => {
       const sortedRecords = orderBy(
@@ -44,25 +102,6 @@ export default function SearchingAndFilteringExample() {
       return sortedRecords;
     });
   };
-  const [query, setQuery] = useState("");
-  const [debouncedQuery] = useDebouncedValue(query, 200);
-  const [selectedRecords, setSelectedRecords] = useState<Vehicle[]>([]);
-
-  useEffect(() => {
-    setRecords(
-      data?.content.filter(({ number, type }) => {
-        if (
-          debouncedQuery !== "" &&
-          !`${number} ${type}`
-            .toLowerCase()
-            .includes(debouncedQuery.trim().toLowerCase())
-        ) {
-          return false;
-        }
-        return true;
-      }) ?? []
-    );
-  }, [debouncedQuery]);
 
   return (
     <>
@@ -70,12 +109,20 @@ export default function SearchingAndFilteringExample() {
         <Flex w={"100%"} gap={20}>
           <TextInput
             sx={{ flexBasis: "100%" }}
-            placeholder="Search vehicles..."
+            placeholder="Search products..."
             icon={<IconSearch size={16} />}
             value={query}
             onChange={(e) => setQuery(e.currentTarget.value)}
           />
-          <Button variant="filled" sx={{ flexShrink: 0 }}>
+          <Button
+            variant="filled"
+            sx={{ flexShrink: 0 }}
+            onClick={() => {
+              setIsAdd(true);
+              setInitialValues({ ...emptyVehicle });
+              setOpen(true);
+            }}
+          >
             <Group position="apart" spacing={"xs"}>
               <IconPlus size={18} />
               Add
@@ -89,7 +136,7 @@ export default function SearchingAndFilteringExample() {
           borderRadius="sm"
           withColumnBorders
           striped
-          fetching={isLoading}
+          fetching={isFetching || isAddLoading || isUpdateLoading}
           verticalAlignment="top"
           records={records}
           sortStatus={sortStatus}
@@ -104,57 +151,74 @@ export default function SearchingAndFilteringExample() {
           onRecordsPerPageChange={setPageSize}
           columns={[
             {
-              accessor: "number",
-              render: ({ number }) => `${number}`,
-              sortable: true,
-            },
-
-            {
               accessor: "type",
               render: ({ type }) => `${type}`,
               sortable: true,
             },
+
+            {
+              accessor: "number",
+              render: ({ number }) => `${number}`,
+              sortable: true,
+            },
           ]}
+          onRowClick={({ id, type, number }) => {
+            setInitialValues({ id, type, number });
+            setIsAdd(false);
+
+            setOpen(true);
+          }}
           rowContextMenu={{
-            items: ({ id, number, type }) => [
+            items: ({ id, type, number }) => [
               {
                 key: "edit",
                 icon: <IconEdit size={14} />,
                 title: `Edit ${number}`,
-                onClick: () =>
-                  showNotification({
-                    color: "orange",
-                    message: `Should edit ${number}}`,
-                  }),
+                onClick: () => {
+                  setInitialValues({ id, type, number });
+                  setIsAdd(false);
+                  setOpen(true);
+                },
               },
-              {
-                key: "delete",
-                title: `Delete ${number} `,
-                icon: <IconTrashX size={14} />,
-                color: "red",
-                onClick: () =>
-                  showNotification({
-                    color: "red",
-                    message: `Should delete ${number}`,
-                  }),
-              },
-              { key: "divider-1", divider: true },
-              {
-                key: "deleteMany",
-                hidden:
-                  selectedRecords.length <= 1 ||
-                  !selectedRecords.map((r) => r.id).includes(id),
-                title: `Delete ${selectedRecords.length} selected records`,
-                icon: <IconTrash size={14} />,
-                color: "red",
-                onClick: () =>
-                  showNotification({
-                    color: "red",
-                    message: `Should delete ${selectedRecords.length} records`,
-                  }),
-              },
+              // {
+              //   key: "delete",
+              //   title: `Delete ${name} `,
+              //   icon: <IconTrashX size={14} />,
+              //   color: "red",
+              //   onClick: () => {
+              //     console.log(id);
+              //     remove.mutate(id);
+              //     showNotification({
+              //       color: "red",
+              //       message: `Should delete ${price}`,
+              //     });
+              //   },
+              // },
+              // { key: "divider-1", divider: true },
+              // {
+              //   key: "deleteMany",
+              //   hidden:
+              //     selectedRecords.length <= 1 ||
+              //     !selectedRecords.map((r) => r.id).includes(id),
+              //   title: `Delete ${selectedRecords.length} selected records`,
+              //   icon: <IconTrash size={14} />,
+              //   color: "red",
+              //   onClick: () =>
+              //     showNotification({
+              //       color: "red",
+              //       message: `Should delete ${selectedRecords.length} records`,
+              //     }),
+              // },
             ],
           }}
+        />
+        <AddEdit
+          opened={open}
+          onClose={() => setOpen(false)}
+          isEdit={!isAdd}
+          initialValues={initialValues}
+          isAdd={isAdd}
+          onSubmit={isAdd ? handleAdd : handleEdit}
         />
       </Box>
     </>

@@ -10,6 +10,9 @@ export class VehicleCrudService extends CrudService<Vehicle> {
   constructor() {
     super("/api/vehicle");
   }
+  isUnique = (number: string) => {
+    return this.axiosInstance.get<boolean>(`/number-exists/${number}`);
+  };
 }
 
 const VehicleCrudServiceInstance = new VehicleCrudService();

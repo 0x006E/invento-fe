@@ -4,7 +4,11 @@ import { ErrorResponse } from "../api/ErrorResponse";
 import { PagedResponse } from "../api/PagedResponse";
 import VehicleCrudService, { Vehicle } from "../api/Vehicle";
 
-export default function useVehicles(size: number) {
+export default function useVehicles(
+  size = 15,
+  sortColumn: keyof Vehicle = "id",
+  sortDirection: "asc" | "desc" = "asc"
+) {
   const {
     getAll: gA,
     get: g,
@@ -12,6 +16,7 @@ export default function useVehicles(size: number) {
     update: u,
     delete: d,
     search: s,
+    isUnique: iU,
   } = VehicleCrudService;
 
   const vehicles = (page: number, query = "") => {
@@ -20,10 +25,16 @@ export default function useVehicles(size: number) {
       queryKey: ["vehicles", page, size, query],
       queryFn: async () => {
         if (isQuery) {
-          const { data } = await s(size, page, query);
+          const { data } = await s(
+            size,
+            page,
+            query,
+            sortColumn,
+            sortDirection
+          );
           return data;
         } else {
-          const { data } = await gA(size, page);
+          const { data } = await gA(size, page, sortColumn, sortDirection);
           return data;
         }
       },
@@ -60,12 +71,18 @@ export default function useVehicles(size: number) {
       return data;
     }
   );
-
+  const isUnique = useMutation<boolean, AxiosError<ErrorResponse>, string>(
+    async (num) => {
+      const { data } = await iU(num);
+      return data;
+    }
+  );
   return {
     vehicles,
     vehicle,
     add,
     update,
     remove,
+    isUnique,
   };
 }

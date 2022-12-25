@@ -1,13 +1,7 @@
 import { Box, Button, Flex, Grid, Group, TextInput } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
-import {
-  IconEdit,
-  IconPlus,
-  IconSearch,
-  IconTrash,
-  IconTrashX,
-} from "@tabler/icons";
+import { IconEdit, IconPlus, IconSearch } from "@tabler/icons";
 import { orderBy } from "lodash";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useEffect, useState } from "react";
@@ -32,7 +26,11 @@ export default function ProductTable() {
   const [query, setQuery] = useState("");
   const [debouncedQuery] = useDebouncedValue(query, 200);
 
-  const { products, add, remove, update } = useProducts(pageSize);
+  const { products, add, remove, update } = useProducts(
+    pageSize,
+    sortStatus.columnAccessor as keyof Product,
+    sortStatus.direction
+  );
   const { data, isFetching, isError, refetch } = products(page, debouncedQuery);
   const { mutate: addMutate, isLoading: isAddLoading } = add;
   const { mutate: updateMutate, isLoading: isUpdateLoading } = update;
@@ -43,6 +41,7 @@ export default function ProductTable() {
   const [initialValues, setInitialValues] = useState<Product>({
     ...emptyProduct,
   });
+  const [selectedRecords, setSelectedRecords] = useState<Product[]>([]);
 
   useEffect(() => {
     if (data) {
@@ -92,7 +91,7 @@ export default function ProductTable() {
   };
 
   const handleSortStatusChange = (status: DataTableSortStatus) => {
-    // setPage(1);
+    setPage(1);
     setSortStatus(status);
     setRecords((currentRecords) => {
       const sortedRecords = orderBy(
@@ -103,7 +102,6 @@ export default function ProductTable() {
       return sortedRecords;
     });
   };
-  const [selectedRecords, setSelectedRecords] = useState<Product[]>([]);
 
   return (
     <>
@@ -164,6 +162,12 @@ export default function ProductTable() {
               sortable: true,
             },
           ]}
+          onRowClick={({ id, name, price }) => {
+            setInitialValues({ id, name, price });
+            setIsAdd(false);
+
+            setOpen(true);
+          }}
           rowContextMenu={{
             items: ({ id, name, price }) => [
               {
@@ -176,41 +180,42 @@ export default function ProductTable() {
                   setOpen(true);
                 },
               },
-              {
-                key: "delete",
-                title: `Delete ${name} `,
-                icon: <IconTrashX size={14} />,
-                color: "red",
-                onClick: () => {
-                  console.log(id);
-                  remove.mutate(id);
-                  showNotification({
-                    color: "red",
-                    message: `Should delete ${price}`,
-                  });
-                },
-              },
-              { key: "divider-1", divider: true },
-              {
-                key: "deleteMany",
-                hidden:
-                  selectedRecords.length <= 1 ||
-                  !selectedRecords.map((r) => r.id).includes(id),
-                title: `Delete ${selectedRecords.length} selected records`,
-                icon: <IconTrash size={14} />,
-                color: "red",
-                onClick: () =>
-                  showNotification({
-                    color: "red",
-                    message: `Should delete ${selectedRecords.length} records`,
-                  }),
-              },
+              // {
+              //   key: "delete",
+              //   title: `Delete ${name} `,
+              //   icon: <IconTrashX size={14} />,
+              //   color: "red",
+              //   onClick: () => {
+              //     console.log(id);
+              //     remove.mutate(id);
+              //     showNotification({
+              //       color: "red",
+              //       message: `Should delete ${price}`,
+              //     });
+              //   },
+              // },
+              // { key: "divider-1", divider: true },
+              // {
+              //   key: "deleteMany",
+              //   hidden:
+              //     selectedRecords.length <= 1 ||
+              //     !selectedRecords.map((r) => r.id).includes(id),
+              //   title: `Delete ${selectedRecords.length} selected records`,
+              //   icon: <IconTrash size={14} />,
+              //   color: "red",
+              //   onClick: () =>
+              //     showNotification({
+              //       color: "red",
+              //       message: `Should delete ${selectedRecords.length} records`,
+              //     }),
+              // },
             ],
           }}
         />
         <AddEdit
           opened={open}
           onClose={() => setOpen(false)}
+          isEdit={!isAdd}
           initialValues={initialValues}
           isAdd={isAdd}
           onSubmit={isAdd ? handleAdd : handleEdit}
