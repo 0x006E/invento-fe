@@ -4,11 +4,7 @@ import { ErrorResponse } from "../api/ErrorResponse";
 import { PagedResponse } from "../api/PagedResponse";
 import VehicleCrudService, { Vehicle } from "../api/Vehicle";
 
-export default function useVehicles(
-  size = 15,
-  sortColumn: keyof Vehicle = "id",
-  sortDirection: "asc" | "desc" = "asc"
-) {
+export default function useVehicles(size = 15) {
   const {
     getAll: gA,
     get: g,
@@ -19,7 +15,12 @@ export default function useVehicles(
     isUnique: iU,
   } = VehicleCrudService;
 
-  const vehicles = (page: number, query = "") => {
+  const vehicles = (
+    page: number,
+    query = "",
+    sortColumn: keyof Vehicle = "id",
+    sortDirection: "asc" | "desc" = "asc"
+  ) => {
     const isQuery = query.length > 0;
     return useQuery<PagedResponse<Vehicle>, AxiosError<ErrorResponse>>({
       queryKey: ["vehicles", page, size, query],

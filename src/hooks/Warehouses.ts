@@ -2,9 +2,9 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { ErrorResponse } from "../api/ErrorResponse";
 import { PagedResponse } from "../api/PagedResponse";
-import ProductCrudService, { Product } from "../api/Product";
+import WarehouseCrudServiceInstance, { Warehouse } from "../api/Warehouse";
 
-export default function useProducts(size = 15) {
+export default function useWarehouses(size = 15) {
   const {
     getAll: gA,
     get: g,
@@ -13,17 +13,17 @@ export default function useProducts(size = 15) {
     delete: d,
     search: s,
     isUnique: iU,
-  } = ProductCrudService;
+  } = WarehouseCrudServiceInstance;
 
-  const products = (
+  const warehouses = (
     page: number,
     query = "",
-    sortColumn: keyof Product = "id",
+    sortColumn: keyof Warehouse = "id",
     sortDirection: "asc" | "desc" = "asc"
   ) => {
     const isQuery = query.length > 0;
-    return useQuery<PagedResponse<Product>, AxiosError<ErrorResponse>>({
-      queryKey: ["products", page, size, query, sortColumn, sortDirection],
+    return useQuery<PagedResponse<Warehouse>, AxiosError<ErrorResponse>>({
+      queryKey: ["warehouses", page, size, query],
       queryFn: async () => {
         if (isQuery) {
           const { data } = await s(
@@ -42,47 +42,45 @@ export default function useProducts(size = 15) {
     });
   };
 
-  const product = (id: string) =>
-    useQuery<Product, AxiosError<ErrorResponse>>({
-      queryKey: ["product", id],
+  const warehouse = (id: string) =>
+    useQuery<Warehouse, AxiosError<ErrorResponse>>({
+      queryKey: ["warehouse", id],
       queryFn: async () => {
         const { data } = await g(id);
         return data;
       },
     });
 
-  const add = useMutation<Product, AxiosError<ErrorResponse>, Product>(
-    async (product) => {
-      const { id, ...rest } = product;
+  const add = useMutation<Warehouse, AxiosError<ErrorResponse>, Warehouse>(
+    async (warehouse) => {
+      const { id, ...rest } = warehouse;
       const { data } = await c(rest);
       return data;
     }
   );
-  const update = useMutation<Product, AxiosError<ErrorResponse>, Product>(
-    async (product) => {
-      if (!product.id) throw new Error("Product id is required");
-      const { data } = await u(product);
+  const update = useMutation<Warehouse, AxiosError<ErrorResponse>, Warehouse>(
+    async (warehouse) => {
+      if (!warehouse.id) throw new Error("warehouse id is required");
+      const { data } = await u(warehouse);
       return data;
     }
   );
-  const remove = useMutation<Product, AxiosError<ErrorResponse>, string>(
+  const remove = useMutation<Warehouse, AxiosError<ErrorResponse>, string>(
     async (id) => {
-      if (!id || id === "") throw new Error("Product id is required");
+      if (!id || id === "") throw new Error("warehouse id is required");
       const { data } = await d(id);
       return data;
     }
   );
-
   const isUnique = useMutation<boolean, AxiosError<ErrorResponse>, string>(
-    async (name) => {
-      const { data } = await iU(name);
+    async (num) => {
+      const { data } = await iU(num);
       return data;
     }
   );
-
   return {
-    products,
-    product,
+    warehouses,
+    warehouse,
     add,
     update,
     remove,

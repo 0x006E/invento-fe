@@ -1,0 +1,14 @@
+[
+  {
+    "value": "car",
+    "label": "Car"
+  },
+  {
+    "value": "auto",
+    "label": "Auto"
+  },
+  {
+    "value": "truck",
+    "label": "Truck"
+  }
+]

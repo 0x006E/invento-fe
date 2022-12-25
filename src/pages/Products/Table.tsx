@@ -25,12 +25,13 @@ export default function ProductTable() {
   const [query, setQuery] = useState("");
   const [debouncedQuery] = useDebouncedValue(query, 200);
 
-  const { products, add, remove, update } = useProducts(
-    pageSize,
+  const { products, add, remove, update } = useProducts(pageSize);
+  const { data, isFetching, isError, refetch } = products(
+    page,
+    debouncedQuery,
     sortStatus.columnAccessor as keyof Product,
     sortStatus.direction
   );
-  const { data, isFetching, isError, refetch } = products(page, debouncedQuery);
   const { mutate: addMutate, isLoading: isAddLoading } = add;
   const { mutate: updateMutate, isLoading: isUpdateLoading } = update;
 

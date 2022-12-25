@@ -75,13 +75,7 @@ function AddEdit(props: AddEditProps) {
   return (
     <Modal title={isAdd ? "Add Product" : "Edit Product"} centered {...rest}>
       <form onSubmit={handleSubmit(handleFormSubmit)}>
-        <TextInput
-          placeholder="ID"
-          hidden
-          readOnly
-          {...register("id", { required: true })}
-          error={errors.id?.message}
-        />
+        <TextInput placeholder="ID" hidden readOnly {...register("id")} />
         <TextInput
           label="Name"
           placeholder="Name"

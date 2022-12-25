@@ -15,6 +15,7 @@ import ErrorPage from "./pages/ErrorPage/ErrorPage";
 import Home from "./pages/Home";
 import Products from "./pages/Products";
 import Vehicles from "./pages/Vehicles";
+import Warehouses from "./pages/Warehouses";
 import "./reset.css";
 
 const router = createBrowserRouter([
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
       {
         path: "vehicles",
         element: <Vehicles />,
+      },
+      {
+        path: "warehouses",
+        element: <Warehouses />,
       },
     ],
   },

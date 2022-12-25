@@ -2,20 +2,27 @@ import { Box, Button, Flex, Grid, Group, TextInput } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { IconEdit, IconPlus, IconSearch } from "@tabler/icons";
+import { cloneDeep } from "lodash";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useEffect, useState } from "react";
-import { Vehicle } from "../../api/Vehicle";
-import useVehicles from "../../hooks/Vehicles";
+import { Warehouse } from "../../api/Warehouse";
+import useWarehouses from "../../hooks/Warehouses";
 import AddEdit from "./AddEdit";
 
 const PAGE_SIZES = [10, 15, 20];
-const emptyVehicle = {
+const emptyWarehouse = {
   id: "",
-  type: "car",
-  number: "",
+  name: "",
+  address: {
+    addressLine1: "",
+    addressLine2: "",
+    city: "",
+    state: "",
+    pincode: "",
+  },
 };
 
-export default function VehicleTable() {
+export default function WarehousesTable() {
   const [pageSize, setPageSize] = useState(PAGE_SIZES[1]);
   const [page, setPage] = useState(1);
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
@@ -25,23 +32,23 @@ export default function VehicleTable() {
   const [query, setQuery] = useState("");
   const [debouncedQuery] = useDebouncedValue(query, 200);
 
-  const { vehicles, add, remove, update } = useVehicles(pageSize);
-  const { data, isFetching, isError, refetch } = vehicles(
+  const { warehouses, add, remove, update } = useWarehouses(pageSize);
+  const { data, isFetching, isError, refetch } = warehouses(
     page,
     debouncedQuery,
-    sortStatus.columnAccessor as keyof Vehicle,
+    sortStatus.columnAccessor as keyof Warehouse,
     sortStatus.direction
   );
   const { mutate: addMutate, isLoading: isAddLoading } = add;
   const { mutate: updateMutate, isLoading: isUpdateLoading } = update;
 
-  const [records, setRecords] = useState<Vehicle[]>([]);
+  const [records, setRecords] = useState<Warehouse[]>([]);
   const [open, setOpen] = useState(false);
   const [isAdd, setIsAdd] = useState(true);
-  const [initialValues, setInitialValues] = useState<Vehicle>({
-    ...emptyVehicle,
-  });
-  const [selectedRecords, setSelectedRecords] = useState<Vehicle[]>([]);
+  const [initialValues, setInitialValues] = useState<Warehouse>(
+    cloneDeep(emptyWarehouse)
+  );
+  const [selectedRecords, setSelectedRecords] = useState<Warehouse[]>([]);
 
   useEffect(() => {
     if (data) {
@@ -49,13 +56,13 @@ export default function VehicleTable() {
     }
   }, [data, isFetching]);
 
-  const handleAdd = async (values: Vehicle) => {
+  const handleAdd = async (values: Warehouse) => {
     setOpen(false);
     addMutate(values, {
       onSuccess: () => {
         showNotification({
           title: "Success",
-          message: "Vehicle added successfully",
+          message: "Warehouse added successfully",
           color: "green",
         });
         refetch();
@@ -69,13 +76,13 @@ export default function VehicleTable() {
       },
     });
   };
-  const handleEdit = async (values: Vehicle) => {
+  const handleEdit = async (values: Warehouse) => {
     setOpen(false);
     updateMutate(values, {
       onSuccess: () => {
         showNotification({
           title: "Success",
-          message: "Vehicle edited successfully",
+          message: "Warehouse edited successfully",
           color: "green",
         });
         refetch();
@@ -101,7 +108,7 @@ export default function VehicleTable() {
         <Flex w={"100%"} gap={20}>
           <TextInput
             sx={{ flexBasis: "100%" }}
-            placeholder="Search vehicles..."
+            placeholder="Search warehouses..."
             icon={<IconSearch size={16} />}
             value={query}
             onChange={(e) => setQuery(e.currentTarget.value)}
@@ -111,7 +118,7 @@ export default function VehicleTable() {
             sx={{ flexShrink: 0 }}
             onClick={() => {
               setIsAdd(true);
-              setInitialValues({ ...emptyVehicle });
+              setInitialValues({ ...emptyWarehouse });
               setOpen(true);
             }}
           >
@@ -123,7 +130,7 @@ export default function VehicleTable() {
         </Flex>
       </Grid>
       <Box sx={{ height: "60vh" }}>
-        <DataTable<Vehicle>
+        <DataTable<Warehouse>
           withBorder
           borderRadius="sm"
           withColumnBorders
@@ -143,31 +150,31 @@ export default function VehicleTable() {
           onRecordsPerPageChange={setPageSize}
           columns={[
             {
-              accessor: "type",
-              render: ({ type }) => `${type}`,
+              accessor: "name",
+              render: ({ name }) => `${name}`,
               sortable: true,
             },
 
             {
-              accessor: "number",
-              render: ({ number }) => `${number}`,
+              accessor: "address",
+              render: ({ address }) => `${Object.values(address).join(", ")}`,
               sortable: true,
             },
           ]}
-          onRowClick={({ id, type, number }) => {
-            setInitialValues({ id, type, number });
+          onRowClick={({ id, name, address }) => {
+            setInitialValues({ id, name, address });
             setIsAdd(false);
 
             setOpen(true);
           }}
           rowContextMenu={{
-            items: ({ id, type, number }) => [
+            items: ({ id, name, address }) => [
               {
                 key: "edit",
                 icon: <IconEdit size={14} />,
-                title: `Edit ${number}`,
+                title: `Edit ${name}`,
                 onClick: () => {
-                  setInitialValues({ id, type, number });
+                  setInitialValues({ id, name, address });
                   setIsAdd(false);
                   setOpen(true);
                 },
