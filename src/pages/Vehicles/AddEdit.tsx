@@ -11,6 +11,7 @@ import { clone } from "lodash";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Vehicle } from "../../api/Vehicle";
+import vehicleType from "../../assets/vehicle-types.json";
 import useVehicles from "../../hooks/Vehicles";
 
 export interface AddEditProps extends Omit<ModalProps, "onSubmit"> {
@@ -19,12 +20,6 @@ export interface AddEditProps extends Omit<ModalProps, "onSubmit"> {
   isEdit?: boolean;
   onSubmit: (values: Vehicle) => void;
 }
-
-const vehicleType = [
-  { value: "car", label: "Car" },
-  { value: "truck", label: "Truck" },
-  { value: "auto", label: "Auto" },
-];
 
 function AddEdit(props: AddEditProps) {
   const { isUnique } = useVehicles();

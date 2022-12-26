@@ -4,7 +4,7 @@ import {
   Modal,
   ModalProps,
   NativeSelect,
-  TextInput,
+  TextInput
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useEffect, useState } from "react";
@@ -151,7 +151,7 @@ function AddEdit(props: AddEditProps) {
               message: "State should be at least 3 characters",
             },
           })}
-          error={errors.address?.pincode?.message}
+          error={errors.address?.state?.message}
           withAsterisk
         />
         <TextInput

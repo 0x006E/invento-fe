@@ -155,7 +155,7 @@ function AddEdit(props: AddEditProps) {
               message: "State should be at least 3 characters",
             },
           })}
-          error={errors.address?.pincode?.message}
+          error={errors.address?.state?.message}
           withAsterisk
         />
         <TextInput
