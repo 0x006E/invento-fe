@@ -11,6 +11,7 @@ import {
   Navigate,
   RouterProvider,
 } from "react-router-dom";
+import Customers from "./pages/Customers";
 import ErrorPage from "./pages/ErrorPage/ErrorPage";
 import Home from "./pages/Home";
 import Locations from "./pages/Locations";
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
       {
         path: "locations",
         element: <Locations />,
+      },
+      {
+        path: "customers",
+        element: <Customers />,
       },
     ],
   },

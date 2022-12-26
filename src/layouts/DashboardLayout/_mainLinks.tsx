@@ -71,8 +71,8 @@ const data = [
   {
     icon: <IconFriends size={16} />,
     color: "violet",
-    label: "People",
-    to: "/people",
+    label: "Customers",
+    to: "/customers",
   },
   {
     icon: <IconCurrencyRupee size={16} />,
