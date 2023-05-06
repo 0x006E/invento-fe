@@ -8,7 +8,7 @@ import {
   IconLocation,
   IconPin,
   IconUsers,
-} from "@tabler/icons";
+} from "@tabler/icons-react";
 import React from "react";
 import { NavLink as N, useMatch, useResolvedPath } from "react-router-dom";
 
@@ -56,6 +56,7 @@ const data = [
     label: "Employees",
     to: "/employees",
   },
+  
   {
     icon: <IconLocation size={16} />,
     color: "grape",

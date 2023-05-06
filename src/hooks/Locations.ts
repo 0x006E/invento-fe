@@ -1,8 +1,11 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { ErrorResponse } from "../api/ErrorResponse";
-import LocationCrudServiceInstance, { Location } from "../api/Location";
-import { PagedResponse } from "../api/PagedResponse";
+import { useContext } from "react";
+import { ErrorResponse } from "../api/models/ErrorResponse";
+import { Location } from "../api/models/Location";
+import { PagedResponse } from "../api/models/PagedResponse";
+import { LocationService } from "../api/services/LocationService";
+import dependencyContext from "../store";
 
 export default function useLocations(size = 15) {
   const {
@@ -13,7 +16,7 @@ export default function useLocations(size = 15) {
     delete: d,
     search: s,
     isUnique: iU,
-  } = LocationCrudServiceInstance;
+  } = useContext(dependencyContext).get<LocationService>("locationService");
 
   const locations = (
     page: number,
@@ -65,7 +68,7 @@ export default function useLocations(size = 15) {
       return data;
     }
   );
-  const remove = useMutation<Location, AxiosError<ErrorResponse>, string>(
+  const remove = useMutation<void, AxiosError<ErrorResponse>, string>(
     async (id) => {
       if (!id || id === "") throw new Error("location id is required");
       const { data } = await d(id);

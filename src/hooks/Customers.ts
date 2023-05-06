@@ -1,8 +1,11 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import CustomerCrudServiceInstance, { Customer } from "../api/Customer";
-import { ErrorResponse } from "../api/ErrorResponse";
-import { PagedResponse } from "../api/PagedResponse";
+import { useContext } from "react";
+import { Customer } from "../api/models/Customer";
+import { ErrorResponse } from "../api/models/ErrorResponse";
+import { PagedResponse } from "../api/models/PagedResponse";
+import { CustomerService } from "../api/services/CustomerService";
+import dependencyContext from "../store";
 
 export default function useCustomers(size = 15) {
   const {
@@ -13,7 +16,7 @@ export default function useCustomers(size = 15) {
     delete: d,
     search: s,
     isUnique: iU,
-  } = CustomerCrudServiceInstance;
+  } = useContext(dependencyContext).get<CustomerService>("customerService");
 
   const customers = (
     page: number,
@@ -65,7 +68,7 @@ export default function useCustomers(size = 15) {
       return data;
     }
   );
-  const remove = useMutation<Customer, AxiosError<ErrorResponse>, string>(
+  const remove = useMutation<void, AxiosError<ErrorResponse>, string>(
     async (id) => {
       if (!id || id === "") throw new Error("customer id is required");
       const { data } = await d(id);

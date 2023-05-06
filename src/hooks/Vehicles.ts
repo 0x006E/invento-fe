@@ -1,8 +1,11 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { ErrorResponse } from "../api/ErrorResponse";
-import { PagedResponse } from "../api/PagedResponse";
-import VehicleCrudService, { Vehicle } from "../api/Vehicle";
+import { useContext } from "react";
+import { ErrorResponse } from "../api/models/ErrorResponse";
+import { PagedResponse } from "../api/models/PagedResponse";
+import { Vehicle } from "../api/models/Vehicle";
+import { VehicleService } from "../api/services/VehicleService";
+import dependencyContext from "../store";
 
 export default function useVehicles(size = 15) {
   const {
@@ -13,7 +16,7 @@ export default function useVehicles(size = 15) {
     delete: d,
     search: s,
     isUnique: iU,
-  } = VehicleCrudService;
+  } = useContext(dependencyContext).get<VehicleService>("vehicleService");
 
   const vehicles = (
     page: number,
@@ -65,7 +68,7 @@ export default function useVehicles(size = 15) {
       return data;
     }
   );
-  const remove = useMutation<Vehicle, AxiosError<ErrorResponse>, string>(
+  const remove = useMutation<void, AxiosError<ErrorResponse>, string>(
     async (id) => {
       if (!id || id === "") throw new Error("vehicle id is required");
       const { data } = await d(id);

@@ -9,7 +9,7 @@ import {
 import { showNotification } from "@mantine/notifications";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Customer } from "../../api/Customer";
+import { Customer } from "../../api/models/Customer";
 import statesList from "../../assets/states.json";
 import useCustomers from "../../hooks/Customers";
 
@@ -89,7 +89,12 @@ function AddEdit(props: AddEditProps) {
   return (
     <Modal title={isAdd ? "Add Customer" : "Edit Customer"} centered {...rest}>
       <form onSubmit={handleSubmit(handleFormSubmit)}>
-        <TextInput placeholder="ID" hidden readOnly {...register("id")} />
+        <TextInput
+          placeholder="ID"
+          type="hidden"
+          readOnly
+          {...register("id")}
+        />
         <TextInput
           label="Name"
           placeholder="Enter name for customer"
@@ -215,7 +220,7 @@ function AddEdit(props: AddEditProps) {
               <Button
                 type="submit"
                 variant="filled"
-                hidden
+                style={{ display: "none" }}
                 disabled
                 tabIndex={-1}
               ></Button>

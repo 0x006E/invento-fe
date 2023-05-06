@@ -3,7 +3,7 @@ import { showNotification } from "@mantine/notifications";
 import { clone } from "lodash";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Product } from "../../api/Product";
+import { Product } from "../../api/models/Product";
 import useProducts from "../../hooks/Products";
 
 export interface AddEditProps extends Omit<ModalProps, "onSubmit"> {
@@ -75,7 +75,12 @@ function AddEdit(props: AddEditProps) {
   return (
     <Modal title={isAdd ? "Add Product" : "Edit Product"} centered {...rest}>
       <form onSubmit={handleSubmit(handleFormSubmit)}>
-        <TextInput placeholder="ID" hidden readOnly {...register("id")} />
+        <TextInput
+          placeholder="ID"
+          readOnly
+          type="hidden"
+          {...register("id")}
+        />
         <TextInput
           label="Name"
           placeholder="Name"
@@ -127,7 +132,7 @@ function AddEdit(props: AddEditProps) {
               <Button
                 type="submit"
                 variant="filled"
-                hidden
+                style={{ display: "none" }}
                 disabled
                 tabIndex={-1}
               ></Button>

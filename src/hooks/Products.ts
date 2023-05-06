@@ -1,8 +1,11 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { ErrorResponse } from "../api/ErrorResponse";
-import { PagedResponse } from "../api/PagedResponse";
-import ProductCrudService, { Product } from "../api/Product";
+import { useContext } from "react";
+import { ErrorResponse } from "../api/models/ErrorResponse";
+import { PagedResponse } from "../api/models/PagedResponse";
+import { Product } from "../api/models/Product";
+import { ProductService } from "../api/services/ProductService";
+import dependencyContext from "../store";
 
 export default function useProducts(size = 15) {
   const {
@@ -13,7 +16,7 @@ export default function useProducts(size = 15) {
     delete: d,
     search: s,
     isUnique: iU,
-  } = ProductCrudService;
+  } = useContext(dependencyContext).get<ProductService>("productService");
 
   const products = (
     page: number,
@@ -65,7 +68,7 @@ export default function useProducts(size = 15) {
       return data;
     }
   );
-  const remove = useMutation<Product, AxiosError<ErrorResponse>, string>(
+  const remove = useMutation<void, AxiosError<ErrorResponse>, string>(
     async (id) => {
       if (!id || id === "") throw new Error("Product id is required");
       const { data } = await d(id);

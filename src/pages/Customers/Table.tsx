@@ -9,16 +9,16 @@ import {
 } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
-import { IconEdit, IconPlus, IconSearch } from "@tabler/icons";
+import { IconEdit, IconPlus, IconSearch } from "@tabler/icons-react";
 import { cloneDeep } from "lodash";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useEffect, useState } from "react";
-import { Customer } from "../../api/Customer";
+import { Customer } from "../../api/models/Customer";
 import useCustomers from "../../hooks/Customers";
 import AddEdit from "./AddEdit";
 
 const PAGE_SIZES = [10, 15, 20];
-const emptyCustomer = {
+const emptyCustomer: Customer = {
   id: "",
   name: "",
   phoneNumber: "",

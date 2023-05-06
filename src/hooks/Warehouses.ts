@@ -1,8 +1,12 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { ErrorResponse } from "../api/ErrorResponse";
-import { PagedResponse } from "../api/PagedResponse";
-import WarehouseCrudServiceInstance, { Warehouse } from "../api/Warehouse";
+import dependencyContext from "../store";
+
+import { useContext } from "react";
+import { ErrorResponse } from "../api/models/ErrorResponse";
+import { PagedResponse } from "../api/models/PagedResponse";
+import { Warehouse } from "../api/models/Warehouse";
+import { WarehouseService } from "../api/services/WarehouseService";
 
 export default function useWarehouses(size = 15) {
   const {
@@ -13,7 +17,7 @@ export default function useWarehouses(size = 15) {
     delete: d,
     search: s,
     isUnique: iU,
-  } = WarehouseCrudServiceInstance;
+  } = useContext(dependencyContext).get<WarehouseService>("warehouseService");
 
   const warehouses = (
     page: number,
@@ -65,7 +69,7 @@ export default function useWarehouses(size = 15) {
       return data;
     }
   );
-  const remove = useMutation<Warehouse, AxiosError<ErrorResponse>, string>(
+  const remove = useMutation<void, AxiosError<ErrorResponse>, string>(
     async (id) => {
       if (!id || id === "") throw new Error("warehouse id is required");
       const { data } = await d(id);

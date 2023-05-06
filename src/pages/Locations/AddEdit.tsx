@@ -4,12 +4,12 @@ import {
   Modal,
   ModalProps,
   NativeSelect,
-  TextInput
+  TextInput,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Location } from "../../api/Location";
+import { Location } from "../../api/models/Location";
 import statesList from "../../assets/states.json";
 import useLocations from "../../hooks/Locations";
 
@@ -88,7 +88,12 @@ function AddEdit(props: AddEditProps) {
   return (
     <Modal title={isAdd ? "Add Location" : "Edit Location"} centered {...rest}>
       <form onSubmit={handleSubmit(handleFormSubmit)}>
-        <TextInput placeholder="ID" hidden readOnly {...register("id")} />
+        <TextInput
+          placeholder="ID"
+          type="hidden"
+          readOnly
+          {...register("id")}
+        />
         <TextInput
           label="Name"
           placeholder="Enter name for location"
@@ -200,7 +205,7 @@ function AddEdit(props: AddEditProps) {
               <Button
                 type="submit"
                 variant="filled"
-                hidden
+                style={{ display: "none" }}
                 disabled
                 tabIndex={-1}
               ></Button>

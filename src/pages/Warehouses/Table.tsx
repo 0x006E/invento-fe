@@ -9,11 +9,11 @@ import {
 } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
-import { IconEdit, IconPlus, IconSearch } from "@tabler/icons";
+import { IconEdit, IconPlus, IconSearch } from "@tabler/icons-react";
 import { cloneDeep } from "lodash";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useEffect, useState } from "react";
-import { Warehouse } from "../../api/Warehouse";
+import { Warehouse } from "../../api/models/Warehouse";
 import useWarehouses from "../../hooks/Warehouses";
 import AddEdit from "./AddEdit";
 
