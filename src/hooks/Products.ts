@@ -10,6 +10,7 @@ import dependencyContext from "../store";
 export default function useProducts(size = 15) {
   const {
     getAll: gA,
+    getAllShort: gAS,
     get: g,
     create: c,
     update: u,
@@ -44,6 +45,15 @@ export default function useProducts(size = 15) {
       },
     });
   };
+
+  const productsShort = () =>
+    useQuery<Product[], AxiosError<ErrorResponse>>({
+      queryKey: ["productsShort"],
+      queryFn: async () => {
+        const { data } = await gAS();
+        return data;
+      },
+    });
 
   const product = (id: string) =>
     useQuery<Product, AxiosError<ErrorResponse>>({
@@ -85,6 +95,7 @@ export default function useProducts(size = 15) {
 
   return {
     products,
+    productsShort,
     product,
     add,
     update,

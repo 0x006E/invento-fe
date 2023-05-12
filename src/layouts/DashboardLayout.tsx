@@ -35,7 +35,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
           p="md"
           hiddenBreakpoint="sm"
           hidden={!opened}
-          width={{ sm: 200 }}
+          width={{ sm: 250 }}
         >
           <Navbar.Section grow mt="xs">
             <MainLinks />

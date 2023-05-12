@@ -9,21 +9,32 @@ import {
 } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
-import { IconPlus, IconSearch } from "@tabler/icons-react";
+import { IconEdit, IconPlus, IconSearch } from "@tabler/icons-react";
+import { cloneDeep } from "lodash";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useEffect, useState } from "react";
-import { Employee, EmployeeRoles } from "../../api/models/Employee";
-import useEmployees from "../../hooks/Employees";
+import { PartyType } from "../../api/models/PartyType";
+import { Sale } from "../../api/models/Sale";
+import useSales from "../../hooks/Sales";
 import AddEdit from "./AddEdit";
 
 const PAGE_SIZES = [10, 15, 20];
-const emptyEmployee = {
+const emptySale: Sale = {
   id: "",
-  name: "",
-  role: EmployeeRoles.Supplier,
+  dateTime: new Date(Date.now()).toISOString(),
+  invoiceNumber: "string",
+  customerId: "",
+  employeeId: "",
+  fromId: "",
+  fromType: PartyType.Warehouse,
+  retailSailPrice: 0,
+  discount: 0,
+  netAmount: 0,
+  saleItems: [],
+  paid: true,
 };
 
-export default function EmployeeTable() {
+export default function SalesTable() {
   const [pageSize, setPageSize] = useState(PAGE_SIZES[1]);
   const [page, setPage] = useState(1);
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
@@ -33,23 +44,23 @@ export default function EmployeeTable() {
   const [query, setQuery] = useState("");
   const [debouncedQuery] = useDebouncedValue(query, 200);
 
-  const { employees, add, remove, update } = useEmployees(pageSize);
-  const { data, isFetching, isLoading, isError, refetch } = employees(
+  const { sales, add, remove, update } = useSales(pageSize);
+  const { data, isFetching, isLoading, isError, refetch, error } = sales(
     page,
     debouncedQuery,
-    sortStatus.columnAccessor as keyof Employee,
+    sortStatus.columnAccessor as keyof Sale,
     sortStatus.direction
   );
   const { mutate: addMutate, isLoading: isAddLoading } = add;
   const { mutate: updateMutate, isLoading: isUpdateLoading } = update;
 
-  const [records, setRecords] = useState<Employee[]>([]);
+  const [records, setRecords] = useState<Sale[]>([]);
   const [open, setOpen] = useState(false);
   const [isAdd, setIsAdd] = useState(true);
-  const [initialValues, setInitialValues] = useState<Employee>({
-    ...emptyEmployee,
-  });
-  const [selectedRecords, setSelectedRecords] = useState<Employee[]>([]);
+  const [initialValues, setInitialValues] = useState<Sale>(
+    cloneDeep(emptySale)
+  );
+  const [selectedRecords, setSelectedRecords] = useState<Sale[]>([]);
 
   useEffect(() => {
     if (data) {
@@ -57,13 +68,21 @@ export default function EmployeeTable() {
     }
   }, [data, isFetching]);
 
-  const handleAdd = async (values: Employee) => {
+  if (isError)
+    showNotification({
+      title: "error",
+      message:
+        error.message ??
+        (error.cause ? error.cause.message : "Something went wrong"),
+      color: "red",
+    });
+  const handleAdd = async (values: Sale) => {
     setOpen(false);
     addMutate(values, {
       onSuccess: () => {
         showNotification({
           title: "Success",
-          message: "Employee added successfully",
+          message: "Sale added successfully",
           color: "green",
         });
         refetch();
@@ -77,13 +96,13 @@ export default function EmployeeTable() {
       },
     });
   };
-  const handleEdit = async (values: Employee) => {
+  const handleEdit = async (values: Sale) => {
     setOpen(false);
     updateMutate(values, {
       onSuccess: () => {
         showNotification({
           title: "Success",
-          message: "Employee edited successfully",
+          message: "Sale edited successfully",
           color: "green",
         });
         refetch();
@@ -101,6 +120,7 @@ export default function EmployeeTable() {
   const handleSortStatusChange = (status: DataTableSortStatus) => {
     setPage(1);
     setSortStatus(status);
+    refetch();
   };
 
   return (
@@ -109,7 +129,7 @@ export default function EmployeeTable() {
         <Flex w={"100%"} gap={20}>
           <TextInput
             sx={{ flexBasis: "100%" }}
-            placeholder="Search employees..."
+            placeholder="Search sales..."
             icon={<IconSearch size={16} />}
             value={query}
             onChange={(e) => setQuery(e.currentTarget.value)}
@@ -119,7 +139,7 @@ export default function EmployeeTable() {
             sx={{ flexShrink: 0 }}
             onClick={() => {
               setIsAdd(true);
-              setInitialValues({ ...emptyEmployee });
+              setInitialValues({ ...emptySale });
               setOpen(true);
             }}
           >
@@ -141,7 +161,7 @@ export default function EmployeeTable() {
         </Flex>
       </Grid>
       <Box sx={{ height: "60vh" }}>
-        <DataTable<Employee>
+        <DataTable<Sale>
           withBorder
           borderRadius="sm"
           withColumnBorders
@@ -161,72 +181,71 @@ export default function EmployeeTable() {
           onRecordsPerPageChange={setPageSize}
           columns={[
             {
-              accessor: "name",
-              render: ({ name }) => `${name}`,
+              accessor: "invoiceNumber",
+              render: ({ invoiceNumber }) => `${invoiceNumber}`,
               sortable: true,
             },
-
-            {
-              accessor: "role",
-              render: ({ role }) =>
-                `${role
-                  .split("_")
-                  .map(
-                    (s) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()
-                  )
-                  .join(" ")}`,
-              sortable: true,
-            },
+            // {
+            //   accessor: "phoneNumber",
+            //   render: ({ phoneNumber }) => `${phoneNumber}`,
+            //   sortable: true,
+            // },
+            // {
+            //   accessor: "address",
+            //   render: ({ address }) =>
+            //     `${Object.values(address).filter(Boolean).join(", ")}`,
+            //   sortable: false,
+            // },
           ]}
-          onRowClick={({ id, role, name }) => {
-            setInitialValues({ id, role, name });
+          onRowClick={(data) => {
+            setInitialValues(data);
             setIsAdd(false);
 
             setOpen(true);
           }}
-          // rowContextMenu={{
-          //   items: ({ id, type, number }) => [
-          //     {
-          //       key: "edit",
-          //       icon: <IconEdit size={14} />,
-          //       title: `Edit ${number}`,
-          //       onClick: () => {
-          //         setInitialValues({ id, type, number });
-          //         setIsAdd(false);
-          //         setOpen(true);
-          //       },
-          //     },
-          //     // {
-          //     //   key: "delete",
-          //     //   title: `Delete ${name} `,
-          //     //   icon: <IconTrashX size={14} />,
-          //     //   color: "red",
-          //     //   onClick: () => {
-          //     //     console.log(id);
-          //     //     remove.mutate(id);
-          //     //     showNotification({
-          //     //       color: "red",
-          //     //       message: `Should delete ${price}`,
-          //     //     });
-          //     //   },
-          //     // },
-          //     // { key: "divider-1", divider: true },
-          //     // {
-          //     //   key: "deleteMany",
-          //     //   hidden:
-          //     //     selectedRecords.length <= 1 ||
-          //     //     !selectedRecords.map((r) => r.id).includes(id),
-          //     //   title: `Delete ${selectedRecords.length} selected records`,
-          //     //   icon: <IconTrash size={14} />,
-          //     //   color: "red",
-          //     //   onClick: () =>
-          //     //     showNotification({
-          //     //       color: "red",
-          //     //       message: `Should delete ${selectedRecords.length} records`,
-          //     //     }),
-          //     // },
-          //   ],
-          // }}
+          rowContextMenu={{
+            items: (data) => [
+              {
+                key: "edit",
+                icon: <IconEdit size={14} />,
+                title: `Edit ${data.invoiceNumber}`,
+                onClick: () => {
+                  setInitialValues(data);
+                  setIsAdd(false);
+                  setOpen(true);
+                },
+              },
+              // {
+              //   key: "delete",
+              //   title: `Delete ${name} `,
+              //   icon: <IconTrashX size={14} />,
+              //   color: "red",
+              //   onClick: () => {
+              //     console.log(id);
+              //     remove.mutate(id);
+              //     showNotification({
+              //       color: "red",
+              //       message: `Should delete ${price}`,
+              //     });
+              //   },
+              // },
+              // { key: "divider-1", divider: true },
+              // {
+              //   key: "deleteMany",
+              //   hidden:
+              //     selectedRecords.length <= 1 ||
+              //     !selectedRecords.map((r) => r.id).includes(id),
+              //   title: `Delete ${selectedRecords.length} selected records`,
+              //   icon: <IconTrash size={14} />,
+              //   color: "red",
+              //   onClick: () =>
+              //     showNotification({
+              //       color: "red",
+              //       message: `Should delete ${selectedRecords.length} records`,
+              //     }),
+              // },
+            ],
+          }}
         />
         <AddEdit
           opened={open}

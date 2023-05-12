@@ -1,4 +1,5 @@
 import { AxiosInstance, AxiosResponse } from "axios";
+import { OmitStrict } from "../../util";
 import { PagedResponse } from "../models/PagedResponse";
 import { Product } from "../models/Product";
 import { BaseService } from "./BaseService";
@@ -23,6 +24,14 @@ export interface ProductService extends BaseService {
   ) => Promise<AxiosResponse<PagedResponse<Product>>>;
 
   /**
+   * Retrieves all product list with minimal data.
+   * @function
+   * @async
+   * @returns {Promise<AxiosResponse<Product[]>>} - A promise that resolves to a response object containing all vehicle details with minimal data.
+   */
+  getAllShort: () => Promise<AxiosResponse<Product[]>>;
+
+  /**
    * Retrieve a single product by its ID
    * @param id - The ID of the product to retrieve
    * @returns A promise that resolves to an AxiosResponse containing the retrieved Product object
@@ -34,7 +43,7 @@ export interface ProductService extends BaseService {
    * @param data - The data to use for creating the new product
    * @returns A promise that resolves to an AxiosResponse containing the newly created Product object
    */
-  create: (data: Omit<Product, "id">) => Promise<AxiosResponse<Product>>;
+  create: (data: OmitStrict<Product, "id">) => Promise<AxiosResponse<Product>>;
 
   /**
    * Update an existing product with the given data
@@ -88,17 +97,17 @@ export class ProductServiceImpl implements ProductService {
     sortColumn: keyof Product,
     sortDirection: "asc" | "desc"
   ) => {
-    return this._axios.get<PagedResponse<Product>>(
-      this._endpoint +
-        `/?size=${size}&page=${page}&sortColumn=${String(
-          sortColumn
-        )}&sortDirection=${sortDirection}`
-    );
+    return this._axios.get<PagedResponse<Product>>(this._endpoint, {
+      params: { size, page, sortColumn, sortDirection },
+    });
+  };
+  getAllShort = () => {
+    return this._axios.get<Product[]>(this._endpoint + `/all`);
   };
   get = (id: string) => {
-    return this._axios.get(this._endpoint + `/${id}`);
+    return this._axios.get<Product>(this._endpoint + `/${id}`);
   };
-  create = (data: Omit<Product, "id">) => {
+  create = (data: OmitStrict<Product, "id">) => {
     return this._axios.post<Product>(this._endpoint + "/", data);
   };
   update = (data: Product) => {

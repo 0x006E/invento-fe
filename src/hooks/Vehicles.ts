@@ -10,6 +10,7 @@ import dependencyContext from "../store";
 export default function useVehicles(size = 15) {
   const {
     getAll: gA,
+    getAllShort: gAS,
     get: g,
     create: c,
     update: u,
@@ -44,6 +45,15 @@ export default function useVehicles(size = 15) {
       },
     });
   };
+
+  const vehiclesShort = () =>
+    useQuery<Vehicle[], AxiosError<ErrorResponse>>({
+      queryKey: ["vehiclesShort"],
+      queryFn: async () => {
+        const { data } = await gAS();
+        return data;
+      },
+    });
 
   const vehicle = (id: string) =>
     useQuery<Vehicle, AxiosError<ErrorResponse>>({
@@ -83,6 +93,7 @@ export default function useVehicles(size = 15) {
   );
   return {
     vehicles,
+    vehiclesShort,
     vehicle,
     add,
     update,

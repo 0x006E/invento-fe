@@ -1,4 +1,5 @@
 import { AxiosInstance, AxiosResponse } from "axios";
+import { OmitStrict } from "../../util";
 import { PagedResponse } from "../models/PagedResponse";
 import { Warehouse } from "../models/Warehouse";
 import { BaseService } from "./BaseService";
@@ -25,6 +26,14 @@ export interface WarehouseService extends BaseService {
   ) => Promise<AxiosResponse<PagedResponse<Warehouse>>>;
 
   /**
+   * Retrieves all warehouse list with minimal data.
+   * @function
+   * @async
+   * @returns {Promise<AxiosResponse<Warehouse[]>>} - A promise that resolves to a response object containing all warehouse details with minimal data.
+   */
+  getAllShort: () => Promise<AxiosResponse<Warehouse[]>>;
+
+  /**
    * Get a specific warehouse by ID
    * @async
    * @param {string} id - The ID of the warehouse to retrieve
@@ -35,10 +44,12 @@ export interface WarehouseService extends BaseService {
   /**
    * Create a new warehouse
    * @async
-   * @param {Omit<Warehouse, "id">} data - The warehouse data to create
+   * @param {OmitStrict<Warehouse, "id">} data - The warehouse data to create
    * @return {Promise<AxiosResponse<Warehouse>>} The created warehouse data
    */
-  create: (data: Omit<Warehouse, "id">) => Promise<AxiosResponse<Warehouse>>;
+  create: (
+    data: OmitStrict<Warehouse, "id">
+  ) => Promise<AxiosResponse<Warehouse>>;
 
   /**
    * Update an existing warehouse
@@ -103,10 +114,13 @@ export class WarehouseServiceImpl implements WarehouseService {
         )}&sortDirection=${sortDirection}`
     );
   };
-  get = (id: string) => {
-    return this._axios.get(this._endpoint + `/${id}`);
+  getAllShort = () => {
+    return this._axios.get<Warehouse[]>(this._endpoint + `/all`);
   };
-  create = (data: Omit<Warehouse, "id">) => {
+  get = (id: string) => {
+    return this._axios.get<Warehouse>(this._endpoint + `/${id}`);
+  };
+  create = (data: OmitStrict<Warehouse, "id">) => {
     return this._axios.post<Warehouse>(this._endpoint + "/", data);
   };
   update = (data: Warehouse) => {

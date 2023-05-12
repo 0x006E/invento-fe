@@ -13,8 +13,9 @@ import { useForm } from "react-hook-form";
 import { Vehicle } from "../../api/models/Vehicle";
 import vehicleType from "../../assets/vehicle-types.json";
 import useVehicles from "../../hooks/Vehicles";
+import { OmitStrict } from "../../util";
 
-export interface AddEditProps extends Omit<ModalProps, "onSubmit"> {
+export interface AddEditProps extends OmitStrict<ModalProps, "onSubmit"> {
   initialValues: Vehicle;
   isAdd: boolean;
   isEdit?: boolean;

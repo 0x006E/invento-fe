@@ -10,6 +10,7 @@ import dependencyContext from "../store";
 export default function useCustomers(size = 15) {
   const {
     getAll: gA,
+    getAllShort: gAS,
     get: g,
     create: c,
     update: u,
@@ -54,6 +55,15 @@ export default function useCustomers(size = 15) {
       },
     });
 
+  const customersShort = () =>
+    useQuery<Customer[], AxiosError<ErrorResponse>>({
+      queryKey: ["customersShort"],
+      queryFn: async () => {
+        const { data } = await gAS();
+        return data;
+      },
+    });
+
   const add = useMutation<Customer, AxiosError<ErrorResponse>, Customer>(
     async (customer) => {
       const { id, ...rest } = customer;
@@ -83,6 +93,7 @@ export default function useCustomers(size = 15) {
   );
   return {
     customers,
+    customersShort,
     customer,
     add,
     update,

@@ -1,14 +1,13 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useContext } from "react";
-import { Employee } from "../api/models/Employee";
 import { ErrorResponse } from "../api/models/ErrorResponse";
 import { PagedResponse } from "../api/models/PagedResponse";
-import { EmployeeService } from "../api/services/EmployeeService";
+import { Sale } from "../api/models/Sale";
+import { SaleService } from "../api/services/SaleService";
 import dependencyContext from "../store";
-import { OmitStrict } from "../util";
 
-export default function useEmployees(size = 15) {
+export default function useSales(size = 15) {
   const {
     getAll: gA,
     get: g,
@@ -16,17 +15,17 @@ export default function useEmployees(size = 15) {
     update: u,
     delete: d,
     search: s,
-  } = useContext(dependencyContext).get<EmployeeService>("employeeService");
+  } = useContext(dependencyContext).get<SaleService>("saleService");
 
-  const employees = (
+  const sales = (
     page: number,
     query = "",
-    sortColumn: keyof Employee = "id",
+    sortColumn: keyof Sale = "id",
     sortDirection: "asc" | "desc" = "asc"
   ) => {
     const isQuery = query.length > 0;
-    return useQuery<PagedResponse<Employee>, AxiosError<ErrorResponse>>({
-      queryKey: ["employees", page, size, query, sortColumn, sortDirection],
+    return useQuery<PagedResponse<Sale>, AxiosError<ErrorResponse>>({
+      queryKey: ["sales", page, size, query],
       queryFn: async () => {
         if (isQuery) {
           const { data } = await s(
@@ -45,42 +44,40 @@ export default function useEmployees(size = 15) {
     });
   };
 
-  const employee = (id: string) =>
-    useQuery<Employee, AxiosError<ErrorResponse>>({
-      queryKey: ["employee", id],
+  const sale = (id: string) =>
+    useQuery<Sale, AxiosError<ErrorResponse>>({
+      queryKey: ["sale", id],
       queryFn: async () => {
         const { data } = await g(id);
         return data;
       },
     });
 
-  const add = useMutation<
-    OmitStrict<Employee, "role">,
-    AxiosError<ErrorResponse>,
-    Employee
-  >(async (employee) => {
-    const { id, ...rest } = employee;
-    const { data } = await c(rest);
-    return data;
-  });
-  const update = useMutation<Employee, AxiosError<ErrorResponse>, Employee>(
-    async (employee) => {
-      if (!employee.id) throw new Error("Employee id is required");
-      const { data } = await u(employee);
+  const add = useMutation<Sale, AxiosError<ErrorResponse>, Sale>(
+    async (sale) => {
+      const { id, invoiceNumber, retailSailPrice, netAmount, paid, ...rest } =
+        sale;
+      const { data } = await c(rest);
+      return data;
+    }
+  );
+  const update = useMutation<Sale, AxiosError<ErrorResponse>, Sale>(
+    async (sale) => {
+      if (!sale.id) throw new Error("sale id is required");
+      const { data } = await u(sale);
       return data;
     }
   );
   const remove = useMutation<void, AxiosError<ErrorResponse>, string>(
     async (id) => {
-      if (!id || id === "") throw new Error("Employee id is required");
+      if (!id || id === "") throw new Error("sale id is required");
       const { data } = await d(id);
       return data;
     }
   );
-
   return {
-    employees,
-    employee,
+    sales,
+    sale,
     add,
     update,
     remove,

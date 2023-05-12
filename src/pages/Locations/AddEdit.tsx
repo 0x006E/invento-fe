@@ -12,8 +12,9 @@ import { useForm } from "react-hook-form";
 import { Location } from "../../api/models/Location";
 import statesList from "../../assets/states.json";
 import useLocations from "../../hooks/Locations";
+import { OmitStrict } from "../../util";
 
-export interface AddEditProps extends Omit<ModalProps, "onSubmit"> {
+export interface AddEditProps extends OmitStrict<ModalProps, "onSubmit"> {
   initialValues: Location;
   isAdd: boolean;
   isEdit?: boolean;

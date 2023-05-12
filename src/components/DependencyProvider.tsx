@@ -4,7 +4,7 @@
  */
 
 import React, { useContext, useRef } from "react";
-import DependencyContext, { ContextState } from "./store";
+import DependencyContext, { ContextState } from "../store";
 
 interface DependencyArray {
   [key: string]: any;

@@ -6,8 +6,8 @@ import {
 import { useColorScheme, useHotkeys, useLocalStorage } from "@mantine/hooks";
 import { Notifications } from "@mantine/notifications";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import DependencyProvider from "./DependencyProvider";
 import Index from "./Index";
+import DependencyProvider from "./components/DependencyProvider";
 import "./reset.css";
 const queryClient = new QueryClient();
 

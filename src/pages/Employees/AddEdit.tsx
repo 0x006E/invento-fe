@@ -3,33 +3,29 @@ import {
   Group,
   Modal,
   ModalProps,
-  NativeSelect,
+  Radio,
   TextInput,
 } from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
 import { clone } from "lodash";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { Vehicle } from "../../api/models/Vehicle";
-import vehicleType from "../../assets/vehicle-types.json";
-import useVehicles from "../../hooks/Vehicles";
+import { Controller, useForm } from "react-hook-form";
+import { Employee, EmployeeRoles } from "../../api/models/Employee";
+import { OmitStrict, enumKeys } from "../../util";
 
-export interface AddEditProps extends Omit<ModalProps, "onSubmit"> {
-  initialValues: Vehicle;
+export interface AddEditProps extends OmitStrict<ModalProps, "onSubmit"> {
+  initialValues: Employee;
   isAdd: boolean;
   isEdit?: boolean;
-  onSubmit: (values: Vehicle) => void;
+  onSubmit: (values: Employee) => void;
 }
 
 function AddEdit(props: AddEditProps) {
-  const { isUnique } = useVehicles();
-  const { mutate, isLoading } = isUnique;
   const [isEdit, setisEdit] = useState(props.isEdit);
   const {
     initialValues = {
       id: "",
-      type: "car",
-      number: "",
+      name: "",
+      role: EmployeeRoles.Supplier,
     },
     isAdd = true,
     onSubmit,
@@ -40,6 +36,7 @@ function AddEdit(props: AddEditProps) {
     register,
     handleSubmit,
     setError,
+    control,
     formState: { errors, isDirty, dirtyFields },
     reset,
   } = useForm({
@@ -55,33 +52,12 @@ function AddEdit(props: AddEditProps) {
     };
   }, [props.opened]);
 
-  const handleFormSubmit = (values: Vehicle) => {
-    if (isEdit)
-      if ("number" in dirtyFields) {
-        mutate(values.number, {
-          onSuccess: (isUnique) => {
-            if (!isUnique) onSubmit(values);
-            else
-              setError("number", {
-                type: "custom",
-                message: "Number already exists",
-              });
-          },
-          onError: (error) => {
-            showNotification({
-              title: "Error",
-              message: error.message,
-              color: "red",
-            });
-          },
-        });
-      } else {
-        onSubmit(values);
-      }
+  const handleFormSubmit = (values: Employee) => {
+    if (isEdit) onSubmit(values);
   };
   const isEditWindow = !(isEdit || isAdd);
   return (
-    <Modal title={isAdd ? "Add Vehicle" : "Edit Vehicle"} centered {...rest}>
+    <Modal title={isAdd ? "Add Employee" : "Edit Employee"} centered {...rest}>
       <form onSubmit={handleSubmit(handleFormSubmit)}>
         <TextInput
           placeholder="ID"
@@ -89,30 +65,38 @@ function AddEdit(props: AddEditProps) {
           readOnly
           {...register("id")}
         />
-        <NativeSelect
-          label="Type"
-          placeholder="Type"
-          data={vehicleType}
-          {...register("type", {
-            required: "Type is required",
-          })}
-          {...(isEditWindow && { disabled: true })}
-          error={errors.type?.message}
-          withAsterisk
+        <Controller
+          name="role"
+          control={control}
+          render={({ field }) => (
+            <Radio.Group
+              {...(isEditWindow && { disabled: true })}
+              error={errors.role?.message}
+              label="Role"
+              withAsterisk
+              {...field}
+            >
+              <Group mt="xs">
+                {enumKeys(EmployeeRoles).map((key) => (
+                  <Radio
+                    value={EmployeeRoles[key]}
+                    label={key.replace(/([A-Z])/g, " $1").trim()}
+                  />
+                ))}
+              </Group>
+            </Radio.Group>
+          )}
         />
+
         <TextInput
           mt="md"
-          label="Number"
-          placeholder="Enter number with spaces instead of hyphens"
+          label="Name"
+          placeholder="Enter name of employee"
           {...(isEditWindow && { disabled: true })}
-          {...register("number", {
-            required: "Number is required",
-            pattern: {
-              value: /^[A-Z]{2}[ -][0-9]{1,2}(?: [A-Z])?(?: [A-Z]*)? [0-9]{4}$/,
-              message: "Vehicle Number is not of valid format",
-            },
+          {...register("name", {
+            required: "Name is required",
           })}
-          error={errors.number?.message}
+          error={errors.name?.message}
           withAsterisk
         />
 
@@ -124,7 +108,6 @@ function AddEdit(props: AddEditProps) {
             <Button
               type="submit"
               variant="filled"
-              loading={isLoading}
               disabled={!isAdd && !isDirty}
             >
               {isAdd ? "Add" : "Save"}

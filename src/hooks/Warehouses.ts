@@ -11,6 +11,7 @@ import { WarehouseService } from "../api/services/WarehouseService";
 export default function useWarehouses(size = 15) {
   const {
     getAll: gA,
+    getAllShort: gAS,
     get: g,
     create: c,
     update: u,
@@ -45,6 +46,15 @@ export default function useWarehouses(size = 15) {
       },
     });
   };
+
+  const warehousesShort = () =>
+    useQuery<Warehouse[], AxiosError<ErrorResponse>>({
+      queryKey: ["warehousesShort"],
+      queryFn: async () => {
+        const { data } = await gAS();
+        return data;
+      },
+    });
 
   const warehouse = (id: string) =>
     useQuery<Warehouse, AxiosError<ErrorResponse>>({
@@ -84,6 +94,7 @@ export default function useWarehouses(size = 15) {
   );
   return {
     warehouses,
+    warehousesShort,
     warehouse,
     add,
     update,

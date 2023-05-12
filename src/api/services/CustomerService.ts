@@ -1,4 +1,5 @@
 import { AxiosInstance, AxiosResponse } from "axios";
+import { OmitStrict } from "../../util";
 import { Customer } from "../models/Customer";
 import { PagedResponse } from "../models/PagedResponse";
 import { BaseService } from "./BaseService";
@@ -27,6 +28,14 @@ export interface CustomerService extends BaseService {
   ) => Promise<AxiosResponse<PagedResponse<Customer>>>;
 
   /**
+   * Retrieves all customer list with minimal data.
+   * @function
+   * @async
+   * @returns {Promise<AxiosResponse<Customer[]>>} - A promise that resolves to a response object containing all customer details with minimal data.
+   */
+  getAllShort: () => Promise<AxiosResponse<Customer[]>>;
+
+  /**
    * Retrieves a customer by ID.
    * @function
    * @async
@@ -39,10 +48,12 @@ export interface CustomerService extends BaseService {
    * Creates a new customer.
    * @function
    * @async
-   * @param {Omit<Customer, "id">} data - The data for the new customer.
+   * @param {OmitStrict<Customer, "id">} data - The data for the new customer.
    * @returns {Promise<AxiosResponse<Customer>>} - A promise that resolves to a response object containing the newly created customer.
    */
-  create: (data: Omit<Customer, "id">) => Promise<AxiosResponse<Customer>>;
+  create: (
+    data: OmitStrict<Customer, "id">
+  ) => Promise<AxiosResponse<Customer>>;
 
   /**
    * Updates an existing customer.
@@ -110,10 +121,13 @@ export class CustomerServiceImpl implements CustomerService {
         )}&sortDirection=${sortDirection}`
     );
   };
-  get = (id: string) => {
-    return this._axios.get(this._endpoint + `/${id}`);
+  getAllShort = () => {
+    return this._axios.get<Customer[]>(this._endpoint + `/all`);
   };
-  create = (data: Omit<Customer, "id">) => {
+  get = (id: string) => {
+    return this._axios.get<Customer>(this._endpoint + `/${id}`);
+  };
+  create = (data: OmitStrict<Customer, "id">) => {
     return this._axios.post<Customer>(this._endpoint + "/", data);
   };
   update = (data: Customer) => {

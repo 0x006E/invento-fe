@@ -1,4 +1,5 @@
 import { AxiosInstance, AxiosResponse } from "axios";
+import { OmitStrict } from "../../util";
 import { Location } from "../models/Location";
 import { PagedResponse } from "../models/PagedResponse";
 import { BaseService } from "./BaseService";
@@ -39,10 +40,12 @@ export interface LocationService extends BaseService {
    * Creates a new location.
    * @function
    * @async
-   * @param {Omit<Location, "id">} data - The data for the new location.
+   * @param {OmitStrict<Location, "id">} data - The data for the new location.
    * @returns {Promise<AxiosResponse<Location>>} - A promise that resolves to a response object containing the newly created location.
    */
-  create: (data: Omit<Location, "id">) => Promise<AxiosResponse<Location>>;
+  create: (
+    data: OmitStrict<Location, "id">
+  ) => Promise<AxiosResponse<Location>>;
 
   /**
    * Updates an existing location.
@@ -111,9 +114,9 @@ export class LocationServiceImpl implements LocationService {
     );
   };
   get = (id: string) => {
-    return this._axios.get(this._endpoint + `/${id}`);
+    return this._axios.get<Location>(this._endpoint + `/${id}`);
   };
-  create = (data: Omit<Location, "id">) => {
+  create = (data: OmitStrict<Location, "id">) => {
     return this._axios.post<Location>(this._endpoint + "/", data);
   };
   update = (data: Location) => {

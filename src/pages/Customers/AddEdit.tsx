@@ -12,8 +12,9 @@ import { useForm } from "react-hook-form";
 import { Customer } from "../../api/models/Customer";
 import statesList from "../../assets/states.json";
 import useCustomers from "../../hooks/Customers";
+import { OmitStrict } from "../../util";
 
-export interface AddEditProps extends Omit<ModalProps, "onSubmit"> {
+export interface AddEditProps extends OmitStrict<ModalProps, "onSubmit"> {
   initialValues: Customer;
   isAdd: boolean;
   isEdit?: boolean;

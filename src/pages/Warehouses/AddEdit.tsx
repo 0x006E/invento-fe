@@ -12,8 +12,9 @@ import { useForm } from "react-hook-form";
 import { Warehouse } from "../../api/models/Warehouse";
 import statesList from "../../assets/states.json";
 import useWarehouses from "../../hooks/Warehouses";
+import { OmitStrict } from "../../util";
 
-export interface AddEditProps extends Omit<ModalProps, "onSubmit"> {
+export interface AddEditProps extends OmitStrict<ModalProps, "onSubmit"> {
   initialValues: Warehouse;
   isAdd: boolean;
   isEdit?: boolean;

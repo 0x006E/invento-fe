@@ -5,8 +5,9 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Product } from "../../api/models/Product";
 import useProducts from "../../hooks/Products";
+import { OmitStrict } from "../../util";
 
-export interface AddEditProps extends Omit<ModalProps, "onSubmit"> {
+export interface AddEditProps extends OmitStrict<ModalProps, "onSubmit"> {
   initialValues: Product;
   isAdd: boolean;
   isEdit?: boolean;

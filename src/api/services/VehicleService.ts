@@ -1,4 +1,5 @@
 import { AxiosInstance, AxiosResponse } from "axios";
+import { OmitStrict } from "../../util";
 import { PagedResponse } from "../models/PagedResponse";
 import { Vehicle } from "../models/Vehicle";
 import { BaseService } from "./BaseService";
@@ -27,6 +28,14 @@ export interface VehicleService extends BaseService {
   ) => Promise<AxiosResponse<PagedResponse<Vehicle>>>;
 
   /**
+   * Retrieves all vehicle list with minimal data.
+   * @function
+   * @async
+   * @returns {Promise<AxiosResponse<Vehicle[]>>} - A promise that resolves to a response object containing all vehicle details with minimal data.
+   */
+  getAllShort: () => Promise<AxiosResponse<Vehicle[]>>;
+
+  /**
    * Retrieves a single vehicle entity.
    * @function
    * @param {string} id - The ID of the vehicle to retrieve.
@@ -37,10 +46,10 @@ export interface VehicleService extends BaseService {
   /**
    * Creates a new vehicle entity.
    * @function
-   * @param {Omit<Vehicle, "id">} data - The vehicle entity to create.
+   * @param {OmitStrict<Vehicle, "id">} data - The vehicle entity to create.
    * @returns {Promise<AxiosResponse<Vehicle>>} - A Promise that resolves with the created vehicle entity.
    */
-  create: (data: Omit<Vehicle, "id">) => Promise<AxiosResponse<Vehicle>>;
+  create: (data: OmitStrict<Vehicle, "id">) => Promise<AxiosResponse<Vehicle>>;
 
   /**
    * Updates an existing vehicle entity.
@@ -106,10 +115,13 @@ export class VehicleServiceImpl implements VehicleService {
         )}&sortDirection=${sortDirection}`
     );
   };
-  get = (id: string) => {
-    return this._axios.get(this._endpoint + `/${id}`);
+  getAllShort = () => {
+    return this._axios.get<Vehicle[]>(this._endpoint + `/all`);
   };
-  create = (data: Omit<Vehicle, "id">) => {
+  get = (id: string) => {
+    return this._axios.get<Vehicle>(this._endpoint + `/${id}`);
+  };
+  create = (data: OmitStrict<Vehicle, "id">) => {
     return this._axios.post<Vehicle>(this._endpoint + "/", data);
   };
   update = (data: Vehicle) => {

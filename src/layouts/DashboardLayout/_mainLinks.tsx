@@ -1,5 +1,6 @@
 import { NavLink, ThemeIcon } from "@mantine/core";
 import {
+  IconArrowUp,
   IconBuilding,
   IconBuildingStore,
   IconCar,
@@ -11,78 +12,115 @@ import {
 } from "@tabler/icons-react";
 import React from "react";
 import { NavLink as N, useMatch, useResolvedPath } from "react-router-dom";
+import { LinksGroup } from "../../components/LinksGroup";
 
 interface MainLinkProps {
-  icon: React.ReactNode;
+  icon: React.FC<any>;
   color: string;
   label: string;
   to: string;
+  links?: { label: string; link: string }[];
+  initiallyOpened?: boolean;
 }
 
-function MainLink({ icon, color, label, to }: MainLinkProps) {
+function MainLink({
+  icon: Icon,
+  color,
+  label,
+  to,
+  links,
+  initiallyOpened,
+}: MainLinkProps) {
   let resolved = useResolvedPath(to);
   let match = useMatch({ path: resolved.pathname, end: true });
+
+  let ColoredIcon: React.FC<any> = () => (
+    <ThemeIcon color={color} variant="light">
+      <Icon size={16} />
+    </ThemeIcon>
+  );
+
+  if (!links || links.length == 0)
+    return (
+      <NavLink
+        component={N}
+        to={to}
+        label={label}
+        icon={<ColoredIcon />}
+        active={match ? true : false}
+      ></NavLink>
+    );
+
   return (
-    <NavLink
-      component={N}
-      to={to}
+    <LinksGroup
+      icon={ColoredIcon}
       label={label}
-      icon={
-        <ThemeIcon color={color} variant="light">
-          {icon}
-        </ThemeIcon>
-      }
+      links={links}
+      key={label}
       active={match ? true : false}
-    ></NavLink>
+      initiallyOpened={initiallyOpened}
+    />
   );
 }
 
 const data = [
   {
-    icon: <IconBuildingStore size={16} />,
+    icon: IconBuildingStore,
     color: "blue",
     label: "Products",
     to: "/products",
   },
   {
-    icon: <IconCar size={16} />,
+    icon: IconCar,
     color: "violet",
     label: "Vehicles",
     to: "/vehicles",
   },
   {
-    icon: <IconUsers size={16} />,
+    icon: IconUsers,
     color: "teal",
     label: "Employees",
     to: "/employees",
   },
-  
   {
-    icon: <IconLocation size={16} />,
+    icon: IconArrowUp,
+    color: "violet",
+    label: "Stock",
+    initiallyOpened: true,
+    to: "/stock",
+    links: [
+      { label: "Opening Stock", link: "/stock/opening" },
+      { label: "Take Stock", link: "/stock/take" },
+      { label: "Give Stock", link: "/stock/give" },
+    ],
+  },
+
+  {
+    icon: IconLocation,
     color: "grape",
     label: "Locations",
     to: "/locations",
   },
   {
-    icon: <IconBuilding size={16} />,
+    icon: IconBuilding,
     color: "blue",
     label: "Warehouses",
     to: "/warehouses",
   },
   {
-    icon: <IconFriends size={16} />,
+    icon: IconFriends,
     color: "violet",
     label: "Customers",
     to: "/customers",
   },
   {
-    icon: <IconCurrencyRupee size={16} />,
+    icon: IconCurrencyRupee,
     color: "teal",
     label: "Sales",
     to: "/sales",
   },
   {
-    icon: <IconPin size={16} />,
+    icon: IconPin,
     color: "grape",
     label: "Trips",
     to: "/trips",
