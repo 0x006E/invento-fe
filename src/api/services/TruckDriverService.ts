@@ -1,4 +1,5 @@
 import { AxiosInstance, AxiosPromise } from "axios";
+import { OmitStrict } from "../../util";
 import { TruckDriver } from "../models/TruckDriver";
 import { BaseService } from "./BaseService";
 

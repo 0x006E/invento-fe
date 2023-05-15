@@ -1,4 +1,5 @@
 import { AxiosInstance, AxiosResponse } from "axios";
+import { OmitStrict } from "../../util";
 import { WarehouseWorker } from "../models/WarehouseWorker";
 import { BaseService } from "./BaseService";
 
