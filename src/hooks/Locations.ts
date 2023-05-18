@@ -1,10 +1,8 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useContext } from "react";
-import { ErrorResponse } from "../api/models/ErrorResponse";
-import { Location } from "../api/models/Location";
-import { PagedResponse } from "../api/models/PagedResponse";
-import { LocationService } from "../api/services/LocationService";
+import { ErrorResponse, Location, PagedResponse } from "../api/models";
+import { LocationService } from "../api/services";
 import dependencyContext from "../store";
 
 export default function useLocations(size = 15) {

@@ -3,10 +3,8 @@ import { AxiosError } from "axios";
 import dependencyContext from "../store";
 
 import { useContext } from "react";
-import { ErrorResponse } from "../api/models/ErrorResponse";
-import { PagedResponse } from "../api/models/PagedResponse";
-import { Warehouse } from "../api/models/Warehouse";
-import { WarehouseService } from "../api/services/WarehouseService";
+import { ErrorResponse, PagedResponse, Warehouse } from "../api/models";
+import { WarehouseService } from "../api/services";
 
 export default function useWarehouses(size = 15) {
   const {

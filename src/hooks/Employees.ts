@@ -1,10 +1,9 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useContext } from "react";
-import { Employee } from "../api/models/Employee";
-import { ErrorResponse } from "../api/models/ErrorResponse";
-import { PagedResponse } from "../api/models/PagedResponse";
-import { EmployeeService } from "../api/services/EmployeeService";
+
+import { Employee, ErrorResponse, PagedResponse } from "../api/models";
+import { EmployeeService } from "../api/services";
 import dependencyContext from "../store";
 import { OmitStrict } from "../util";
 

@@ -1,10 +1,8 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useContext } from "react";
-import { ErrorResponse } from "../api/models/ErrorResponse";
-import { PagedResponse } from "../api/models/PagedResponse";
-import { Product } from "../api/models/Product";
-import { ProductService } from "../api/services/ProductService";
+import { ErrorResponse, PagedResponse, Product } from "../api/models";
+import { ProductService } from "../api/services";
 import dependencyContext from "../store";
 
 export default function useProducts(size = 15) {

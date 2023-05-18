@@ -4,12 +4,30 @@ import {
   MantineProvider,
 } from "@mantine/core";
 import { useColorScheme, useHotkeys, useLocalStorage } from "@mantine/hooks";
-import { Notifications } from "@mantine/notifications";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Notifications, notifications } from "@mantine/notifications";
+import {
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 import Index from "./Index";
+
+import { ErrorResponse } from "./api/models/ErrorResponse";
 import DependencyProvider from "./components/DependencyProvider";
 import "./reset.css";
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  queryCache: new QueryCache({
+    onError: (error) =>
+      notifications.show({
+        title: "Error",
+        message:
+          "message" in (error as ErrorResponse)
+            ? (error as ErrorResponse).message
+            : "Something went worng",
+        color: "red",
+      }),
+  }),
+});
 
 function App() {
   const preferredColorScheme = useColorScheme();

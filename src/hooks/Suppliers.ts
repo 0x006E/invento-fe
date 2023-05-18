@@ -1,9 +1,9 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useContext } from "react";
-import { ErrorResponse } from "../api/models/ErrorResponse";
-import { Supplier } from "../api/models/Supplier";
-import { SupplierService } from "../api/services/SupplierService";
+
+import { ErrorResponse, Supplier } from "../api/models";
+import { SupplierService } from "../api/services";
 import dependencyContext from "../store";
 
 export default function useSuppliers(size = 15) {

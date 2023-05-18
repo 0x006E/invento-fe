@@ -1,10 +1,8 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useContext } from "react";
-import { ErrorResponse } from "../api/models/ErrorResponse";
-import { PagedResponse } from "../api/models/PagedResponse";
-import { Sale } from "../api/models/Sale";
-import { SaleService } from "../api/services/SaleService";
+import { ErrorResponse, PagedResponse, Sale } from "../api/models";
+import { SaleService } from "../api/services";
 import dependencyContext from "../store";
 
 export default function useSales(size = 15) {

@@ -35,6 +35,7 @@
     "@types/react": "^18.2.5",
     "@types/react-dom": "^18.2.4",
     "@vitejs/plugin-react-swc": "^3.3.0",
+    "create-ts-index": "^1.14.0",
     "typescript": "^5.0.4",
     "vite": "^4.3.5"
   }

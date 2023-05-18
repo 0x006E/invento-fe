@@ -1,10 +1,9 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useContext } from "react";
-import { ErrorResponse } from "../api/models/ErrorResponse";
-import { PagedResponse } from "../api/models/PagedResponse";
-import { Vehicle } from "../api/models/Vehicle";
-import { VehicleService } from "../api/services/VehicleService";
+
+import { ErrorResponse, PagedResponse, Vehicle } from "../api/models";
+import { VehicleService } from "../api/services";
 import dependencyContext from "../store";
 
 export default function useVehicles(size = 15) {

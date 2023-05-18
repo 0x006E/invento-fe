@@ -70,7 +70,6 @@ function AddEdit(props: AddEditProps) {
           control={control}
           render={({ field }) => (
             <Radio.Group
-              {...(isEditWindow && { disabled: true })}
               error={errors.role?.message}
               label="Role"
               withAsterisk
@@ -79,6 +78,7 @@ function AddEdit(props: AddEditProps) {
               <Group mt="xs">
                 {enumKeys(EmployeeRoles).map((key) => (
                   <Radio
+                    {...(isEditWindow && { disabled: true })}
                     value={EmployeeRoles[key]}
                     label={key.replace(/([A-Z])/g, " $1").trim()}
                   />
