@@ -11,3 +11,13 @@ export type Rename<T, K extends keyof T, N extends string> = Pick<
 export type OmitStrict<T, K extends keyof T> = T extends any
   ? Pick<T, Exclude<keyof T, K>>
   : never;
+
+export function formatDate(date: Date) {
+  const options: Intl.DateTimeFormatOptions = {
+    weekday: "long",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  };
+  return date.toLocaleDateString("en-IN", options);
+}

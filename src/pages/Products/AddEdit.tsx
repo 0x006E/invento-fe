@@ -85,7 +85,7 @@ function AddEdit(props: AddEditProps) {
         <TextInput
           label="Name"
           placeholder="Name"
-          {...(isEditWindow && { disabled: true })}
+          disabled={isEditWindow}
           {...register("name", {
             required: "Name is required",
             minLength: 3,
@@ -97,7 +97,7 @@ function AddEdit(props: AddEditProps) {
           mt="md"
           label="Price"
           placeholder="Price"
-          {...(isEditWindow && { disabled: true })}
+          disabled={isEditWindow}
           {...register("price", {
             valueAsNumber: true,
             required: "Price is required",

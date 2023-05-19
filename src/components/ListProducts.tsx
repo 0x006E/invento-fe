@@ -1,4 +1,4 @@
-import { Loader, Table } from "@mantine/core";
+import { Center, Loader, Table } from "@mantine/core";
 import { Item } from "../api/models";
 import useProducts from "../hooks/Products";
 
@@ -21,6 +21,13 @@ function ListProducts(props: ListProductsProps) {
         <td>{item.quantityDefective}</td>
       </tr>
     ));
+  const rowWrapper = (row: JSX.Element) => (
+    <tr>
+      <td colSpan={100}>
+        <Center p={4}>{row}</Center>
+      </td>
+    </tr>
+  );
   return (
     <Table>
       <thead>
@@ -32,8 +39,8 @@ function ListProducts(props: ListProductsProps) {
         </tr>
       </thead>
       <tbody>
-        {isLoading && <Loader size={40} />}
-        {isError ? "Products load failed" : rows}
+        {isLoading && rowWrapper(<Loader size={40} />)}
+        {isError ? rowWrapper(<>Products load failed</>) : rows}
       </tbody>
     </Table>
   );

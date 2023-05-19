@@ -242,7 +242,6 @@ function AddEdit(props: AddEditProps) {
               }}
               render={({ field }) => (
                 <Radio.Group
-                  {...(isEditWindow && { disabled: true })}
                   error={errors.fromType?.message}
                   label="From type"
                   withAsterisk
@@ -255,6 +254,7 @@ function AddEdit(props: AddEditProps) {
                   <Group mt="xs">
                     {enumKeys(PartyType).map((key) => (
                       <Radio
+                        disabled={isEditWindow}
                         key={key}
                         value={PartyType[key]}
                         label={key.replace(/([A-Z])/g, " $1").trim()}

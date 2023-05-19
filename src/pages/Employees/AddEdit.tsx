@@ -78,7 +78,7 @@ function AddEdit(props: AddEditProps) {
               <Group mt="xs">
                 {enumKeys(EmployeeRoles).map((key) => (
                   <Radio
-                    {...(isEditWindow && { disabled: true })}
+                    disabled={isEditWindow}
                     value={EmployeeRoles[key]}
                     label={key.replace(/([A-Z])/g, " $1").trim()}
                   />
@@ -92,7 +92,7 @@ function AddEdit(props: AddEditProps) {
           mt="md"
           label="Name"
           placeholder="Enter name of employee"
-          {...(isEditWindow && { disabled: true })}
+          disabled={isEditWindow}
           {...register("name", {
             required: "Name is required",
           })}

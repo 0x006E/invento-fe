@@ -2,6 +2,7 @@ import { Navigate, createBrowserRouter } from "react-router-dom";
 import Customers from "./pages/Customers/Customers";
 import Employees from "./pages/Employees/Employees";
 import ErrorPage from "./pages/ErrorPage/ErrorPage";
+import GiveStocks from "./pages/GiveStock/GiveStock";
 import Home from "./pages/Home/Home";
 import Locations from "./pages/Locations/Locations";
 import OpeningStocks from "./pages/OpeningStock/OpeningStocks";
@@ -56,6 +57,10 @@ const router = createBrowserRouter([
       {
         path: "stock/take",
         element: <TakeStocks />,
+      },
+      {
+        path: "stock/give",
+        element: <GiveStocks />,
       },
     ],
   },

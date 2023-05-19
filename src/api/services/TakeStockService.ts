@@ -83,7 +83,7 @@ export interface TakeStockService extends BaseService {
 
 export class TakeStockServiceImpl implements TakeStockService {
   _axios;
-  _endpoint = "/api/stock/opening";
+  _endpoint = "/api/stock/take";
 
   constructor(axios: AxiosInstance) {
     this._axios = axios;
@@ -109,9 +109,9 @@ export class TakeStockServiceImpl implements TakeStockService {
     return this._axios.post<TakeStock>(this._endpoint + "/", data);
   };
   update = (data: Pick<TakeStock, "items" | "id" | "fromId" | "fromType">) => {
-    const { id: takeStockId, items, fromId, fromType } = data;
+    const { id: takeId, items, fromId, fromType } = data;
     return this._axios.put<TakeStock>(this._endpoint + `/`, {
-      takeStockId,
+      takeId,
       items,
       fromId,
       fromType,

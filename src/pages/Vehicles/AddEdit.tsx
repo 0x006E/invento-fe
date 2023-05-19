@@ -97,7 +97,7 @@ function AddEdit(props: AddEditProps) {
           {...register("type", {
             required: "Type is required",
           })}
-          {...(isEditWindow && { disabled: true })}
+          disabled={isEditWindow}
           error={errors.type?.message}
           withAsterisk
         />
@@ -105,7 +105,7 @@ function AddEdit(props: AddEditProps) {
           mt="md"
           label="Number"
           placeholder="Enter number with spaces instead of hyphens"
-          {...(isEditWindow && { disabled: true })}
+          disabled={isEditWindow}
           {...register("number", {
             required: "Number is required",
             pattern: {

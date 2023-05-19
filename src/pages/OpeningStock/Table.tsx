@@ -6,10 +6,10 @@ import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useEffect, useState } from "react";
 import { OpeningStock } from "../../api/models/OpeningStock";
 import { PartyType } from "../../api/models/PartyType";
+import FilterByDate from "../../components/FilterByDate";
 import PartyTitle from "../../components/PartyTitle";
 import useOpeningStocks from "../../hooks/OpeningStocks";
 import AddEdit from "./AddEdit";
-import FilterByDate from "./FilterByDate";
 
 const PAGE_SIZES = [10, 15, 20];
 const emptyOpeningStock: OpeningStock = {

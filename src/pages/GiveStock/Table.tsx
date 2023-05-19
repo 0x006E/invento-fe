@@ -5,15 +5,15 @@ import { cloneDeep } from "lodash";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useEffect, useState } from "react";
 import { PartyType } from "../../api/models";
-import { TakeStock } from "../../api/models/TakeStock";
+import { GiveStock } from "../../api/models/GiveStock";
 import FilterByDate from "../../components/FilterByDate";
 import PartyTitle from "../../components/PartyTitle";
-import useTakeStocks from "../../hooks/TakeStocks";
+import useGiveStocks from "../../hooks/GiveStocks";
 import { formatDate } from "../../util";
 import AddEdit from "./AddEdit";
 
 const PAGE_SIZES = [10, 15, 20];
-const emptyTakeStock: TakeStock = {
+const emptyGiveStock: GiveStock = {
   id: "",
   items: [],
   fromId: "",
@@ -23,7 +23,7 @@ const emptyTakeStock: TakeStock = {
   dateTime: "",
 };
 
-export default function TakeStocksTable() {
+export default function GiveStocksTable() {
   const [pageSize, setPageSize] = useState(PAGE_SIZES[1]);
   const [page, setPage] = useState(1);
   const [filterDate, setFilterDate] = useState("");
@@ -32,24 +32,24 @@ export default function TakeStocksTable() {
     columnAccessor: "id",
     direction: "asc",
   });
-  const { takeStocks, add, remove, update } = useTakeStocks(pageSize);
-  const { data, isFetching, isLoading, isError, refetch, error } = takeStocks(
+  const { giveStocks, add, remove, update } = useGiveStocks(pageSize);
+  const { data, isFetching, isLoading, isError, refetch, error } = giveStocks(
     page,
     enableFilter ? filterDate : "",
-    sortStatus.columnAccessor as keyof TakeStock,
+    sortStatus.columnAccessor as keyof GiveStock,
     sortStatus.direction
   );
 
   const { mutate: addMutate, isLoading: isAddLoading } = add;
   const { mutate: updateMutate, isLoading: isUpdateLoading } = update;
 
-  const [records, setRecords] = useState<TakeStock[]>([]);
+  const [records, setRecords] = useState<GiveStock[]>([]);
   const [open, setOpen] = useState(false);
   const [isAdd, setIsAdd] = useState(true);
-  const [initialValues, setInitialValues] = useState<TakeStock>(
-    cloneDeep(emptyTakeStock)
+  const [initialValues, setInitialValues] = useState<GiveStock>(
+    cloneDeep(emptyGiveStock)
   );
-  const [selectedRecords, setSelectedRecords] = useState<TakeStock[]>([]);
+  const [selectedRecords, setSelectedRecords] = useState<GiveStock[]>([]);
 
   useEffect(() => {
     if (data) {
@@ -65,13 +65,13 @@ export default function TakeStocksTable() {
         (error.cause ? error.cause.message : "Something went wrong"),
       color: "red",
     });
-  const handleAdd = async (values: TakeStock) => {
+  const handleAdd = async (values: GiveStock) => {
     setOpen(false);
     addMutate(values, {
       onSuccess: () => {
         showNotification({
           title: "Success",
-          message: "TakeStock added successfully",
+          message: "GiveStock added successfully",
           color: "green",
         });
         refetch();
@@ -85,13 +85,13 @@ export default function TakeStocksTable() {
       },
     });
   };
-  const handleEdit = async (values: TakeStock) => {
+  const handleEdit = async (values: GiveStock) => {
     setOpen(false);
     updateMutate(values, {
       onSuccess: () => {
         showNotification({
           title: "Success",
-          message: "TakeStock edited successfully",
+          message: "GiveStock edited successfully",
           color: "green",
         });
         refetch();
@@ -125,7 +125,7 @@ export default function TakeStocksTable() {
             sx={{ flexShrink: 0 }}
             onClick={() => {
               setIsAdd(true);
-              setInitialValues({ ...emptyTakeStock });
+              setInitialValues({ ...emptyGiveStock });
               setOpen(true);
             }}
           >
@@ -147,7 +147,7 @@ export default function TakeStocksTable() {
         </Flex>
       </Grid>
       <Box sx={{ height: "60vh" }}>
-        <DataTable<TakeStock>
+        <DataTable<GiveStock>
           withBorder
           borderRadius="sm"
           withColumnBorders

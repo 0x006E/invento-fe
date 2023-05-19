@@ -5,6 +5,8 @@ import {
   CustomerServiceImpl,
   EmployeeService,
   EmployeeServiceImpl,
+  GiveStockService,
+  GiveStockServiceImpl,
   LocationService,
   LocationServiceImpl,
   OfficeWorkerServiceImpl,
@@ -43,6 +45,7 @@ export function setupDependencies() {
   const SaleService = new SaleServiceImpl(axiosInstance);
   const OpeningStockService = new OpeningStockServiceImpl(axiosInstance);
   const TakeStockService = new TakeStockServiceImpl(axiosInstance);
+  const GiveStockService = new GiveStockServiceImpl(axiosInstance);
   const EmployeeService = new EmployeeServiceImpl(
     axiosInstance,
     SupplierService,
@@ -82,5 +85,9 @@ export function setupDependencies() {
   context.registerDependency<TakeStockService>(
     "takeStockService",
     TakeStockService
+  );
+  context.registerDependency<GiveStockService>(
+    "giveStockService",
+    GiveStockService
   );
 }

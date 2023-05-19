@@ -99,7 +99,7 @@ function AddEdit(props: AddEditProps) {
         <TextInput
           label="Name"
           placeholder="Enter name for customer"
-          {...(isEditWindow && { disabled: true })}
+          disabled={isEditWindow}
           {...register("name", {
             required: "Name is required",
             minLength: {
@@ -113,7 +113,7 @@ function AddEdit(props: AddEditProps) {
         <TextInput
           label="Phone Number"
           placeholder="Ex: +91 1234567890"
-          {...(isEditWindow && { disabled: true })}
+          disabled={isEditWindow}
           {...register("phoneNumber", {
             required: "Phone Number is required",
             pattern: {
@@ -126,7 +126,7 @@ function AddEdit(props: AddEditProps) {
         />
         <TextInput
           label="Address Line 1"
-          {...(isEditWindow && { disabled: true })}
+          disabled={isEditWindow}
           {...register("address.addressLine1", {
             required: "Address Line 1 is required",
             minLength: {
@@ -139,7 +139,7 @@ function AddEdit(props: AddEditProps) {
         />
         <TextInput
           label="Address Line 2"
-          {...(isEditWindow && { disabled: true })}
+          disabled={isEditWindow}
           {...register("address.addressLine2", {
             minLength: {
               value: 3,
@@ -150,7 +150,7 @@ function AddEdit(props: AddEditProps) {
         />
         <TextInput
           label="City"
-          {...(isEditWindow && { disabled: true })}
+          disabled={isEditWindow}
           {...register("address.city", {
             required: "City is required",
             minLength: {
@@ -164,7 +164,7 @@ function AddEdit(props: AddEditProps) {
         <NativeSelect
           data={Object.values(statesList)}
           label="State"
-          {...(isEditWindow && { disabled: true })}
+          disabled={isEditWindow}
           {...register("address.state", {
             required: "State is required",
             minLength: {
@@ -177,7 +177,7 @@ function AddEdit(props: AddEditProps) {
         />
         <TextInput
           label="Pincode"
-          {...(isEditWindow && { disabled: true })}
+          disabled={isEditWindow}
           {...register("address.pincode", {
             required: "Pincode is required",
             minLength: {

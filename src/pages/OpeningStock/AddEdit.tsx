@@ -108,7 +108,6 @@ function AddEdit(props: AddEditProps) {
             <Controller
               name="partyType"
               control={control}
-              {...(isEditWindow && { disabled: true })}
               rules={{
                 required: "This is field is required",
               }}
@@ -126,7 +125,7 @@ function AddEdit(props: AddEditProps) {
                   <Group mt="xs">
                     {enumKeys(PartyType).map((key) => (
                       <Radio
-                        {...(isEditWindow && { disabled: true })}
+                        disabled={isEditWindow}
                         key={key}
                         value={PartyType[key]}
                         label={key.replace(/([A-Z])/g, " $1").trim()}
@@ -145,7 +144,7 @@ function AddEdit(props: AddEditProps) {
               }}
               render={({ field }) => (
                 <DataSelector
-                  {...(isEditWindow && { disabled: true })}
+                  disabled={isEditWindow}
                   label="Party"
                   placeholder="Party"
                   {...field}

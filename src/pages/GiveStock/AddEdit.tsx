@@ -16,7 +16,7 @@ import {
 import { IconTrashFilled } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { PartyType, TakeStock } from "../../api/models";
+import { GiveStock, PartyType } from "../../api/models";
 
 import PartySelector from "../../components/DataSelector";
 import DataSelector from "../../components/DataSelector/DataSelector";
@@ -24,10 +24,10 @@ import ListProducts from "../../components/ListProducts";
 import { OmitStrict, enumKeys } from "../../util";
 
 export interface AddEditProps extends OmitStrict<ModalProps, "onSubmit"> {
-  initialValues: TakeStock;
+  initialValues: GiveStock;
   isAdd: boolean;
   isEdit?: boolean;
-  onSubmit: (values: TakeStock) => void;
+  onSubmit: (values: GiveStock) => void;
 }
 
 function AddEdit(props: AddEditProps) {
@@ -79,14 +79,14 @@ function AddEdit(props: AddEditProps) {
     };
   }, [props.opened]);
 
-  const handleFormSubmit = (values: TakeStock) => {
+  const handleFormSubmit = (values: GiveStock) => {
     if (isEdit) onSubmit(values);
   };
   const isEditWindow = !(isEdit || isAdd);
 
   return (
     <Modal
-      title={isAdd ? "Add TakeStock" : "Edit TakeStock"}
+      title={isAdd ? "Add GiveStock" : "Edit GiveStock"}
       centered
       {...rest}
       size="lg"
