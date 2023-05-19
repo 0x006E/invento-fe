@@ -1,11 +1,15 @@
 import { Loader, Select, SelectProps } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
+import { ForwardedRef, forwardRef } from "react";
 import useProducts from "../../hooks/Products";
 import { OmitStrict } from "../../util";
 
 export interface ProductSelectorProps extends OmitStrict<SelectProps, "data"> {}
 
-function ProductSelector(props: ProductSelectorProps) {
+function ProductSelector(
+  props: ProductSelectorProps,
+  ref: ForwardedRef<HTMLInputElement>
+) {
   const { productsShort } = useProducts();
 
   const { isError, isFetching, isLoading, refetch, data } = productsShort();
@@ -41,4 +45,4 @@ function ProductSelector(props: ProductSelectorProps) {
   );
 }
 
-export default ProductSelector;
+export default forwardRef(ProductSelector);

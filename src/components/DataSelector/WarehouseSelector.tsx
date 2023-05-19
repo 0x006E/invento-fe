@@ -1,12 +1,16 @@
 import { Loader, Select, SelectProps } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
+import { ForwardedRef, forwardRef } from "react";
 import useWarehouses from "../../hooks/Warehouses";
 import { OmitStrict } from "../../util";
 
 export interface WarehouseSelectorProps
   extends OmitStrict<SelectProps, "data"> {}
 
-function WarehouseSelector(props: WarehouseSelectorProps) {
+function WarehouseSelector(
+  props: WarehouseSelectorProps,
+  ref: ForwardedRef<HTMLInputElement>
+) {
   const { warehousesShort } = useWarehouses();
 
   const { isError, isFetching, isLoading, refetch, data } = warehousesShort();
@@ -42,4 +46,4 @@ function WarehouseSelector(props: WarehouseSelectorProps) {
   );
 }
 
-export default WarehouseSelector;
+export default forwardRef(WarehouseSelector);

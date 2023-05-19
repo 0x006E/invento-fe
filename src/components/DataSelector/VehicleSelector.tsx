@@ -1,11 +1,15 @@
 import { Loader, Select, SelectProps } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
+import { ForwardedRef, forwardRef } from "react";
 import useVehicles from "../../hooks/Vehicles";
 import { OmitStrict } from "../../util";
 
 export interface VehicleSelectorProps extends OmitStrict<SelectProps, "data"> {}
 
-function VehicleSelector(props: VehicleSelectorProps) {
+function VehicleSelector(
+  props: VehicleSelectorProps,
+  ref: ForwardedRef<HTMLInputElement>
+) {
   const { vehiclesShort } = useVehicles();
 
   const { isError, isFetching, isLoading, refetch, data } = vehiclesShort();
@@ -41,4 +45,4 @@ function VehicleSelector(props: VehicleSelectorProps) {
   );
 }
 
-export default VehicleSelector;
+export default forwardRef(VehicleSelector);

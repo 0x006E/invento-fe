@@ -1,12 +1,16 @@
 import { Loader, Select, SelectProps } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
+import { ForwardedRef, forwardRef } from "react";
 import useSuppliers from "../../hooks/Suppliers";
 import { OmitStrict } from "../../util";
 
 export interface SupplierSelectorProps
   extends OmitStrict<SelectProps, "data"> {}
 
-function SupplierSelector(props: SupplierSelectorProps) {
+function SupplierSelector(
+  props: SupplierSelectorProps,
+  ref: ForwardedRef<HTMLInputElement>
+) {
   const { suppliers } = useSuppliers();
 
   const { isError, isFetching, isLoading, refetch, data } = suppliers();
@@ -42,4 +46,4 @@ function SupplierSelector(props: SupplierSelectorProps) {
   );
 }
 
-export default SupplierSelector;
+export default forwardRef(SupplierSelector);
