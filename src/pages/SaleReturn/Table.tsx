@@ -4,7 +4,7 @@ import { IconEdit, IconPlus } from "@tabler/icons-react";
 import { cloneDeep } from "lodash";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useEffect, useState } from "react";
-import { SaleReturn } from "../../api/models";
+import { PartyType, SaleReturn } from "../../api/models";
 import AsyncTitleLoader from "../../components/AsyncTitleLoader/AsyncTitleLoader";
 import FilterByDate from "../../components/FilterByDate";
 import useSaleReturns from "../../hooks/SaleReturns";
@@ -12,12 +12,13 @@ import { formatDate } from "../../util";
 import AddEdit from "./AddEdit";
 
 const PAGE_SIZES = [10, 15, 20];
-const emptysaleReturn: SaleReturn = {
+const emptysaleReturn: SaleReturn & { toType: PartyType } = {
   id: "",
   customerId: "",
   dateTime: new Date().toISOString(),
   items: [],
   toId: "",
+  toType: PartyType.Supplier,
 };
 
 export default function saleReturnsTable() {
@@ -68,7 +69,7 @@ export default function saleReturnsTable() {
       onSuccess: () => {
         showNotification({
           title: "Success",
-          message: "Load in item added successfully",
+          message: "Sale return added successfully",
           color: "green",
         });
         refetch();
@@ -88,7 +89,7 @@ export default function saleReturnsTable() {
       onSuccess: () => {
         showNotification({
           title: "Success",
-          message: "Load in item edited successfully",
+          message: "Sale return edited successfully",
           color: "green",
         });
         refetch();

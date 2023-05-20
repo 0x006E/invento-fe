@@ -15,13 +15,14 @@ import {
 import { IconCalendar, IconTrashFilled } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { LoadOutProductItem, SaleReturn } from "../../api/models";
+import { LoadOutProductItem, PartyType, SaleReturn } from "../../api/models";
 
+import { Radio } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import dayjs from "dayjs";
 import DataSelector from "../../components/DataSelector";
 import ListProducts from "../../components/ListProducts";
-import { OmitStrict } from "../../util";
+import { OmitStrict, enumKeys } from "../../util";
 
 export interface AddEditProps extends OmitStrict<ModalProps, "onSubmit"> {
   initialValues: SaleReturn;
@@ -39,6 +40,7 @@ function AddEdit(props: AddEditProps) {
       customerId: "",
       dateTime: new Date().toISOString(),
       items: [],
+      toType: PartyType.Supplier,
       toId: "",
     },
     isAdd = true,
@@ -56,7 +58,7 @@ function AddEdit(props: AddEditProps) {
     formState: { errors, isDirty, dirtyFields },
     reset,
     setValue,
-  } = useForm({
+  } = useForm<SaleReturn & { toType: PartyType }>({
     defaultValues: { ...initialValues, dateTime: new Date().toISOString() },
   });
   const { fields, append, prepend, remove, insert } = useFieldArray({
@@ -79,8 +81,9 @@ function AddEdit(props: AddEditProps) {
     };
   }, [props.opened]);
 
-  const handleFormSubmit = (values: SaleReturn) => {
-    if (isEdit) onSubmit(values);
+  const handleFormSubmit = (values: SaleReturn & { toType: PartyType }) => {
+    const { toType, ...rest } = values;
+    if (isEdit) onSubmit(rest);
   };
   const isEditWindow = !(isEdit || isAdd);
 
@@ -152,6 +155,54 @@ function AddEdit(props: AddEditProps) {
               />
             )}
             <Space h="md" />
+            <Controller
+              name="toType"
+              control={control}
+              rules={{
+                required: "This is field is required",
+              }}
+              render={({ field }) => (
+                <Radio.Group
+                  error={errors.toType?.message}
+                  label="To type"
+                  withAsterisk
+                  {...field}
+                  onChange={(e) => {
+                    resetField("toId");
+                    field.onChange(e);
+                  }}
+                >
+                  <Group mt="xs">
+                    {enumKeys(PartyType).map((key) => (
+                      <Radio
+                        disabled={isEditWindow}
+                        key={key}
+                        value={PartyType[key]}
+                        label={key.replace(/([A-Z])/g, " $1").trim()}
+                      />
+                    ))}
+                  </Group>
+                </Radio.Group>
+              )}
+            />
+            <Space h="md" />
+            <Controller
+              name="toId"
+              control={control}
+              rules={{
+                required: "This is field is required",
+              }}
+              render={({ field }) => (
+                <DataSelector
+                  type={getValues("toType")}
+                  label="To"
+                  placeholder="To"
+                  {...field}
+                  error={errors.toId?.message}
+                  withAsterisk
+                />
+              )}
+            />
           </Stepper.Step>
           <Stepper.Step label="Products">
             <ScrollArea h={400} offsetScrollbars>
