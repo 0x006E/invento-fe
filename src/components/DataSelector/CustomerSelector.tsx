@@ -1,23 +1,24 @@
 import { Loader, Select, SelectProps } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { ForwardedRef, forwardRef } from "react";
-import useProducts from "../../hooks/Products";
+import useCustomers from "../../hooks/Customers";
 import { OmitStrict } from "../../util";
 
-export interface ProductSelectorProps extends OmitStrict<SelectProps, "data"> {}
+export interface CustomerSelectorProps
+  extends OmitStrict<SelectProps, "data"> {}
 
-function ProductSelector(
-  props: ProductSelectorProps,
+function CustomerSelector(
+  props: CustomerSelectorProps,
   ref: ForwardedRef<HTMLInputElement>
 ) {
-  const { productsShort } = useProducts();
+  const { customersShort } = useCustomers();
 
-  const { isError, isFetching, isLoading, refetch, data } = productsShort();
+  const { isError, isFetching, isLoading, refetch, data } = customersShort();
 
   if (isError) {
     notifications.show({
       title: "Error",
-      message: "Cannot load products",
+      message: "Cannot load customers",
       color: "red",
     });
   }
@@ -32,8 +33,8 @@ function ProductSelector(
         !data || data.length === 0 || data.length === 0
           ? [
               {
-                label: "No products",
-                value: "no-products",
+                label: "No customers",
+                value: "no-customers",
                 disabled: true,
               },
             ]
@@ -46,4 +47,4 @@ function ProductSelector(
   );
 }
 
-export default forwardRef(ProductSelector);
+export default forwardRef(CustomerSelector);

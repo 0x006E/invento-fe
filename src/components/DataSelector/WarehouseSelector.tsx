@@ -26,6 +26,7 @@ function WarehouseSelector(
   return (
     <Select
       {...props}
+      ref={ref}
       onDropdownOpen={() => refetch()}
       rightSection={isLoading || isFetching ? <Loader size={16} /> : null}
       data={

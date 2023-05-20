@@ -27,6 +27,7 @@ function VehicleSelector(
       {...props}
       onDropdownOpen={() => refetch()}
       rightSection={isLoading || isFetching ? <Loader size={16} /> : null}
+      ref={ref}
       data={
         !data || data.length === 0
           ? [
