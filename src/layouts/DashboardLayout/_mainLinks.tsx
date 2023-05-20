@@ -106,6 +106,12 @@ const data = [
     color: "blue",
     label: "Warehouses",
     to: "/warehouses",
+    initiallyOpened: true,
+    links: [
+      { label: "Warehouses", link: "/warehouses" },
+      { label: "Load In", link: "/warehouses/load-in" },
+      { label: "Load Out", link: "/warehouses/load-out" },
+    ],
   },
   {
     icon: IconFriends,
@@ -118,6 +124,12 @@ const data = [
     color: "teal",
     label: "Sales",
     to: "/sales",
+    initiallyOpened: true,
+    links: [
+      { label: "Sales", link: "/sales" },
+      { label: "Return", link: "/sales/return" },
+      { label: "Replace Defective", link: "/sales/replace-defective" },
+    ],
   },
   {
     icon: IconPin,

@@ -14,6 +14,8 @@ import {
   OpeningStockServiceImpl,
   ProductService,
   ProductServiceImpl,
+  SaleReturnService,
+  SaleReturnServiceImpl,
   SaleService,
   SaleServiceImpl,
   SupplierService,
@@ -23,6 +25,10 @@ import {
   TruckDriverServiceImpl,
   VehicleService,
   VehicleServiceImpl,
+  WarehouseLoadInService,
+  WarehouseLoadInServiceImpl,
+  WarehouseLoadOutService,
+  WarehouseLoadOutServiceImpl,
   WarehouseService,
   WarehouseServiceImpl,
   WarehouseWorkerServiceImpl,
@@ -46,6 +52,11 @@ export function setupDependencies() {
   const OpeningStockService = new OpeningStockServiceImpl(axiosInstance);
   const TakeStockService = new TakeStockServiceImpl(axiosInstance);
   const GiveStockService = new GiveStockServiceImpl(axiosInstance);
+  const SaleReturnService = new SaleReturnServiceImpl(axiosInstance);
+  const WarehouseLoadInService = new WarehouseLoadInServiceImpl(axiosInstance);
+  const WarehouseLoadOutService = new WarehouseLoadOutServiceImpl(
+    axiosInstance
+  );
   const EmployeeService = new EmployeeServiceImpl(
     axiosInstance,
     SupplierService,
@@ -89,5 +100,17 @@ export function setupDependencies() {
   context.registerDependency<GiveStockService>(
     "giveStockService",
     GiveStockService
+  );
+  context.registerDependency<WarehouseLoadInService>(
+    "warehouseLoadInService",
+    WarehouseLoadInService
+  );
+  context.registerDependency<WarehouseLoadOutService>(
+    "warehouseLoadOutService",
+    WarehouseLoadOutService
+  );
+  context.registerDependency<SaleReturnService>(
+    "saleReturnService",
+    SaleReturnService
   );
 }

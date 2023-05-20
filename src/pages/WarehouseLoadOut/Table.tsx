@@ -4,23 +4,25 @@ import { IconEdit, IconPlus } from "@tabler/icons-react";
 import { cloneDeep } from "lodash";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useEffect, useState } from "react";
-import { OpeningStock } from "../../api/models/OpeningStock";
-import { PartyType } from "../../api/models/PartyType";
+import { PartyType, WarehouseLoadOut } from "../../api/models";
 import AsyncTitleLoader from "../../components/AsyncTitleLoader/AsyncTitleLoader";
 import FilterByDate from "../../components/FilterByDate";
-import useOpeningStocks from "../../hooks/OpeningStocks";
+import useWarehouseLoadOuts from "../../hooks/WarehouseLoadOuts";
+import { formatDate } from "../../util";
 import AddEdit from "./AddEdit";
 
 const PAGE_SIZES = [10, 15, 20];
-const emptyOpeningStock: OpeningStock = {
+const emptywarehouseLoadOut: WarehouseLoadOut = {
   id: "",
-  partyId: "",
-  partyType: PartyType.Supplier,
-  dayEndId: "",
-  items: [],
+  warehouseId: "",
+  vehicleNumber: "",
+  imageUrl: "",
+  ervnumber: "",
+  dateTime: new Date().toISOString(),
+  products: [],
 };
 
-export default function OpeningStocksTable() {
+export default function warehouseLoadOutsTable() {
   const [pageSize, setPageSize] = useState(PAGE_SIZES[1]);
   const [page, setPage] = useState(1);
   const [filterDate, setFilterDate] = useState("");
@@ -29,25 +31,28 @@ export default function OpeningStocksTable() {
     columnAccessor: "id",
     direction: "asc",
   });
-  const { openingStocks, add, remove, update } = useOpeningStocks(pageSize);
+  const { warehouseLoadOuts, add, remove, update } =
+    useWarehouseLoadOuts(pageSize);
   const { data, isFetching, isLoading, isError, refetch, error } =
-    openingStocks(
+    warehouseLoadOuts(
       page,
       enableFilter ? filterDate : "",
-      sortStatus.columnAccessor as keyof OpeningStock,
+      sortStatus.columnAccessor as keyof WarehouseLoadOut,
       sortStatus.direction
     );
 
   const { mutate: addMutate, isLoading: isAddLoading } = add;
   const { mutate: updateMutate, isLoading: isUpdateLoading } = update;
 
-  const [records, setRecords] = useState<OpeningStock[]>([]);
+  const [records, setRecords] = useState<WarehouseLoadOut[]>([]);
   const [open, setOpen] = useState(false);
   const [isAdd, setIsAdd] = useState(true);
-  const [initialValues, setInitialValues] = useState<OpeningStock>(
-    cloneDeep(emptyOpeningStock)
+  const [initialValues, setInitialValues] = useState<WarehouseLoadOut>(
+    cloneDeep(emptywarehouseLoadOut)
   );
-  const [selectedRecords, setSelectedRecords] = useState<OpeningStock[]>([]);
+  const [selectedRecords, setSelectedRecords] = useState<WarehouseLoadOut[]>(
+    []
+  );
 
   useEffect(() => {
     if (data) {
@@ -63,13 +68,13 @@ export default function OpeningStocksTable() {
         (error.cause ? error.cause.message : "Something went wrong"),
       color: "red",
     });
-  const handleAdd = async (values: OpeningStock) => {
+  const handleAdd = async (values: WarehouseLoadOut) => {
     setOpen(false);
     addMutate(values, {
       onSuccess: () => {
         showNotification({
           title: "Success",
-          message: "OpeningStock added successfully",
+          message: "Load in item added successfully",
           color: "green",
         });
         refetch();
@@ -83,13 +88,13 @@ export default function OpeningStocksTable() {
       },
     });
   };
-  const handleEdit = async (values: OpeningStock) => {
+  const handleEdit = async (values: WarehouseLoadOut) => {
     setOpen(false);
     updateMutate(values, {
       onSuccess: () => {
         showNotification({
           title: "Success",
-          message: "OpeningStock edited successfully",
+          message: "Load in item edited successfully",
           color: "green",
         });
         refetch();
@@ -123,7 +128,7 @@ export default function OpeningStocksTable() {
             sx={{ flexShrink: 0 }}
             onClick={() => {
               setIsAdd(true);
-              setInitialValues({ ...emptyOpeningStock });
+              setInitialValues({ ...emptywarehouseLoadOut });
               setOpen(true);
             }}
           >
@@ -145,7 +150,7 @@ export default function OpeningStocksTable() {
         </Flex>
       </Grid>
       <Box sx={{ height: "60vh" }}>
-        <DataTable<OpeningStock>
+        <DataTable<WarehouseLoadOut>
           withBorder
           borderRadius="sm"
           withColumnBorders
@@ -165,23 +170,29 @@ export default function OpeningStocksTable() {
           onRecordsPerPageChange={setPageSize}
           columns={[
             {
-              accessor: "partyId",
-              title: "Party Name",
-              render: ({ partyId, partyType }) => (
-                <AsyncTitleLoader id={partyId} type={partyType} />
+              accessor: "warehouseId",
+              title: "Warehouse",
+              render: ({ warehouseId }) => (
+                <AsyncTitleLoader id={warehouseId} type={PartyType.Warehouse} />
               ),
+              sortable: false,
+            },
+            {
+              accessor: "vehicleNumber",
+              title: "Vehicle",
+              render: ({ vehicleNumber }) => `${vehicleNumber}`,
               sortable: true,
             },
             {
-              accessor: "partyType",
-              title: "Party Type",
-              render: ({ partyType }) => `${partyType}`,
-              sortable: true,
+              accessor: "products",
+              title: "Products",
+              render: ({ products }) => `${products.length}`,
+              sortable: false,
             },
             {
-              accessor: "items",
-              title: "Items",
-              render: ({ items }) => `${items.length}`,
+              accessor: "dateTime",
+              title: "Date",
+              render: ({ dateTime }) => `${formatDate(dateTime)}`,
               sortable: true,
             },
             // {

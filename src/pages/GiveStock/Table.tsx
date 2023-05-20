@@ -6,8 +6,8 @@ import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useEffect, useState } from "react";
 import { PartyType } from "../../api/models";
 import { GiveStock } from "../../api/models/GiveStock";
+import AsyncTitleLoader from "../../components/AsyncTitleLoader/AsyncTitleLoader";
 import FilterByDate from "../../components/FilterByDate";
-import PartyTitle from "../../components/PartyTitle";
 import useGiveStocks from "../../hooks/GiveStocks";
 import { formatDate } from "../../util";
 import AddEdit from "./AddEdit";
@@ -170,7 +170,7 @@ export default function GiveStocksTable() {
               accessor: "fromId",
               title: "From",
               render: ({ fromId, fromType }) => (
-                <PartyTitle id={fromId} type={fromType} />
+                <AsyncTitleLoader id={fromId} type={fromType} />
               ),
               sortable: true,
             },
@@ -178,7 +178,7 @@ export default function GiveStocksTable() {
               accessor: "toId",
               title: "To",
               render: ({ toId, toType }) => (
-                <PartyTitle id={toId} type={toType} />
+                <AsyncTitleLoader id={toId} type={toType} />
               ),
               sortable: true,
             },
@@ -191,7 +191,7 @@ export default function GiveStocksTable() {
             {
               accessor: "dateTime",
               title: "Date",
-              render: ({ dateTime }) => `${formatDate(new Date(dateTime))}`,
+              render: ({ dateTime }) => `${formatDate(dateTime)}`,
               sortable: true,
             },
             // {

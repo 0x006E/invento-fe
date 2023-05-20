@@ -1,10 +1,4 @@
-import {
-  Collapse,
-  NavLink,
-  UnstyledButton,
-  createStyles,
-  rem,
-} from "@mantine/core";
+import { NavLink, UnstyledButton, createStyles, rem } from "@mantine/core";
 import { useState } from "react";
 import { NavLink as N } from "react-router-dom";
 
@@ -14,8 +8,8 @@ const useStyles = createStyles((theme) => ({
     display: "block",
     textDecoration: "none",
     padding: `${theme.spacing.xs} ${theme.spacing.md}`,
-    paddingLeft: rem(31),
-    marginLeft: rem(30),
+    paddingLeft: rem(15),
+    marginLeft: rem(15),
     fontSize: theme.fontSizes.sm,
     color:
       theme.colorScheme === "dark"
@@ -57,17 +51,18 @@ export function LinksGroup({
       {link.label}
     </N>
   ));
-
   return (
     <>
       <NavLink
         component={UnstyledButton}
-        onClick={() => setOpened((o) => !o)}
+        onChange={(e) => setOpened(e)}
         label={label}
         active={active}
         icon={<Icon />}
-      ></NavLink>
-      {hasLinks ? <Collapse in={opened}>{items}</Collapse> : null}
+        opened={opened}
+      >
+        {hasLinks ? items : null}
+      </NavLink>
     </>
   );
 }

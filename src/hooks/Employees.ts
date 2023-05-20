@@ -10,6 +10,7 @@ import { OmitStrict } from "../util";
 export default function useEmployees(size = 15) {
   const {
     getAll: gA,
+    getAllShort: gAS,
     get: g,
     create: c,
     update: u,
@@ -43,6 +44,14 @@ export default function useEmployees(size = 15) {
       },
     });
   };
+  const employeesShort = () =>
+    useQuery<Employee[], AxiosError<ErrorResponse>>({
+      queryKey: ["employeesShort"],
+      queryFn: async () => {
+        const { data } = await gAS();
+        return data;
+      },
+    });
 
   const employee = (id: string) =>
     useQuery<Employee, AxiosError<ErrorResponse>>({
@@ -80,6 +89,7 @@ export default function useEmployees(size = 15) {
   return {
     employees,
     employee,
+    employeesShort,
     add,
     update,
     remove,

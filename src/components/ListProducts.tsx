@@ -1,30 +1,55 @@
 import { Center, Loader, Table } from "@mantine/core";
+import { ReactNode } from "react";
 import { Item } from "../api/models";
 import useProducts from "../hooks/Products";
 
-export interface ListProductsProps {
-  items: Item[];
+type Key<T> = { key: keyof T; label?: string };
+
+export interface ListProductsProps<T = Item> {
+  items: T[];
+  keys?: Key<T>[];
 }
 
-function ListProducts(props: ListProductsProps) {
-  const { items } = props;
+type GenericItem = {
+  productId: string;
+};
+
+function ListProducts<T extends GenericItem>({
+  items,
+  keys,
+}: ListProductsProps<T>): JSX.Element {
   const { productsShort } = useProducts();
   const { data: products, isError, isLoading } = productsShort();
+
+  const fullKeys = [
+    { key: "quantityFull", label: "Full" },
+    { key: "quantityEmpty", label: "Empty" },
+    { key: "quantityDefective", label: "Defective" },
+  ];
 
   const rows =
     products &&
     items.map((item) => (
       <tr key={item.productId}>
         <td>{products.find((i) => i.id === item.productId)?.name}</td>
-        <td>{item.quantityEmpty}</td>
-        <td>{item.quantityFull}</td>
-        <td>{item.quantityDefective}</td>
+        {keys
+          ? keys
+              .filter((i) => i.key !== "productId" || i.key !== "id")
+              .map((key) => (
+                <td key={key.key as string}>{item[key.key] as ReactNode}</td>
+              ))
+          : fullKeys.map(
+              ({ key }) =>
+                key !== "productId" && (
+                  <td key={key}>{item[key as keyof T] as ReactNode}</td>
+                )
+            )}
       </tr>
     ));
   const rowWrapper = (row: JSX.Element) => (
     <tr>
       <td colSpan={100}>
-        <Center p={4}>{row}</Center>
+        <Center>{row}</Center>
       </td>
     </tr>
   );
@@ -33,9 +58,13 @@ function ListProducts(props: ListProductsProps) {
       <thead>
         <tr>
           <th>Product Name</th>
-          <th>Empty</th>
-          <th>Full</th>
-          <th>Defective</th>
+          {keys
+            ? keys.map((key) => (
+                <th key={key.key as string}>
+                  {key.label ? key.label : (key.key as ReactNode)}
+                </th>
+              ))
+            : fullKeys.map((key) => <th key={key.key}>{key.label}</th>)}
         </tr>
       </thead>
       <tbody>

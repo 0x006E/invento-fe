@@ -7,9 +7,12 @@ import Home from "./pages/Home/Home";
 import Locations from "./pages/Locations/Locations";
 import OpeningStocks from "./pages/OpeningStock/OpeningStocks";
 import Products from "./pages/Products/Products";
+import SaleReturns from "./pages/SaleReturn/SaleReturn";
 import Sales from "./pages/Sales/Sales";
 import TakeStocks from "./pages/TakeStock/TakeStock";
 import Vehicles from "./pages/Vehicles/Vehicles";
+import WarehouseLoadIns from "./pages/WarehouseLoadIn/WarehouseLoadIn";
+import WarehouseLoadOuts from "./pages/WarehouseLoadOut/WarehouseLoadOut";
 import Warehouses from "./pages/Warehouses/Warehouses";
 
 const router = createBrowserRouter([
@@ -17,6 +20,7 @@ const router = createBrowserRouter([
     path: "/",
     element: <Home />,
     errorElement: <ErrorPage />,
+    ErrorBoundary: ErrorPage,
     children: [
       {
         index: true,
@@ -34,10 +38,7 @@ const router = createBrowserRouter([
         path: "vehicles",
         element: <Vehicles />,
       },
-      {
-        path: "warehouses",
-        element: <Warehouses />,
-      },
+
       {
         path: "locations",
         element: <Locations />,
@@ -51,6 +52,10 @@ const router = createBrowserRouter([
         element: <Sales />,
       },
       {
+        path: "sales/return",
+        element: <SaleReturns />,
+      },
+      {
         path: "stock/opening",
         element: <OpeningStocks />,
       },
@@ -61,6 +66,18 @@ const router = createBrowserRouter([
       {
         path: "stock/give",
         element: <GiveStocks />,
+      },
+      {
+        path: "warehouses",
+        element: <Warehouses />,
+      },
+      {
+        path: "warehouses/load-in",
+        element: <WarehouseLoadIns />,
+      },
+      {
+        path: "warehouses/load-out",
+        element: <WarehouseLoadOuts />,
       },
     ],
   },

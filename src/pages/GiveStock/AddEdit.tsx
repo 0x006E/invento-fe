@@ -18,8 +18,7 @@ import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { GiveStock, PartyType } from "../../api/models";
 
-import PartySelector from "../../components/DataSelector";
-import DataSelector from "../../components/DataSelector/DataSelector";
+import DataSelector from "../../components/DataSelector";
 import ListProducts from "../../components/ListProducts";
 import { OmitStrict, enumKeys } from "../../util";
 
@@ -143,7 +142,7 @@ function AddEdit(props: AddEditProps) {
                 required: "This is field is required",
               }}
               render={({ field }) => (
-                <PartySelector
+                <DataSelector
                   disabled={isEditWindow}
                   label="From"
                   type={getValues("fromType")}
@@ -192,7 +191,7 @@ function AddEdit(props: AddEditProps) {
                 required: "This is field is required",
               }}
               render={({ field }) => (
-                <PartySelector
+                <DataSelector
                   disabled={!isAdd}
                   label="To"
                   type={getValues("toType")}

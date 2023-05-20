@@ -19,6 +19,7 @@ export interface EmployeeService extends BaseService {
     sortColumn: keyof Employee,
     sortDirection: "asc" | "desc"
   ): Promise<AxiosResponse<PagedResponse<Employee>>>;
+  getAllShort(): Promise<AxiosResponse<Employee[]>>;
   get(id: string): Promise<AxiosResponse<Employee>>;
   create(
     data: OmitStrict<Employee, "id">
@@ -68,6 +69,9 @@ export class EmployeeServiceImpl implements EmployeeService {
           sortColumn
         )}&sortDirection=${sortDirection}`
     );
+  };
+  getAllShort = () => {
+    return this._axios.get<Employee[]>(this._endpoint + `/all`);
   };
   get = (id: string) => {
     return this._axios.get<Employee>(this._endpoint + `/${id}`);

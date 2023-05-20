@@ -6,27 +6,32 @@ import {
   Modal,
   ModalProps,
   NumberInput,
-  Radio,
   ScrollArea,
   Space,
   Stepper,
   Text,
   TextInput,
 } from "@mantine/core";
-import { IconTrashFilled } from "@tabler/icons-react";
-import dayjs from "dayjs";
+import { IconCalendar, IconTrashFilled } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { PartyType } from "../../api/models/PartyType";
-import { Sale } from "../../api/models/Sale";
-import DataSelector from "../../components/DataSelector/DataSelector";
-import { OmitStrict, enumKeys } from "../../util";
+import {
+  LoadInProductItem,
+  PartyType,
+  WarehouseLoadIn,
+} from "../../api/models";
+
+import { DateTimePicker } from "@mantine/dates";
+import dayjs from "dayjs";
+import DataSelector from "../../components/DataSelector";
+import ListProducts from "../../components/ListProducts";
+import { OmitStrict } from "../../util";
 
 export interface AddEditProps extends OmitStrict<ModalProps, "onSubmit"> {
-  initialValues: Sale;
+  initialValues: WarehouseLoadIn;
   isAdd: boolean;
   isEdit?: boolean;
-  onSubmit: (values: Sale) => void;
+  onSubmit: (values: WarehouseLoadIn) => void;
 }
 
 function AddEdit(props: AddEditProps) {
@@ -35,17 +40,11 @@ function AddEdit(props: AddEditProps) {
   const {
     initialValues = {
       id: "",
-      dateTime: "",
-      invoiceNumber: "string",
-      customerId: "",
-      employeeId: "",
-      fromId: "",
-      fromType: PartyType.Warehouse,
-      retailSailPrice: 0,
-      discount: 0,
-      netAmount: 0,
-      saleItems: [],
-      paid: true,
+      warehouseId: "",
+      vehicleNumber: "",
+      invoiceNumber: "",
+      dateTime: new Date().toISOString(),
+      products: [],
     },
     isAdd = true,
     onSubmit,
@@ -63,11 +62,11 @@ function AddEdit(props: AddEditProps) {
     reset,
     setValue,
   } = useForm({
-    defaultValues: initialValues,
+    defaultValues: { ...initialValues, dateTime: new Date().toISOString() },
   });
   const { fields, append, prepend, remove, insert } = useFieldArray({
     control,
-    name: "saleItems", // unique name for your Field Array
+    name: "products", // unique name for your Field Array
   });
 
   const nextStep = () =>
@@ -85,15 +84,14 @@ function AddEdit(props: AddEditProps) {
     };
   }, [props.opened]);
 
-  const handleFormSubmit = (values: Sale) => {
-    setValue("dateTime", dayjs().toISOString());
+  const handleFormSubmit = (values: WarehouseLoadIn) => {
     if (isEdit) onSubmit(values);
   };
   const isEditWindow = !(isEdit || isAdd);
 
   return (
     <Modal
-      title={isAdd ? "Add Sale" : "Edit Sale"}
+      title={isAdd ? "Add WarehouseLoadIn" : "Edit WarehouseLoadIn"}
       centered
       {...rest}
       size="lg"
@@ -112,129 +110,97 @@ function AddEdit(props: AddEditProps) {
               readOnly
               {...register("id")}
             />
-            <Controller
-              name="fromType"
-              control={control}
-              rules={{
-                required: "This is field is required",
-              }}
-              render={({ field }) => (
-                <Radio.Group
-                  error={errors.fromType?.message}
-                  label="From type"
-                  withAsterisk
-                  {...field}
-                  onChange={(e) => {
-                    resetField("fromId");
-                    field.onChange(e);
-                  }}
-                >
-                  <Group mt="xs">
-                    {enumKeys(PartyType).map((key) => (
-                      <Radio
-                        disabled={isEditWindow}
-                        key={key}
-                        value={PartyType[key]}
-                        label={key.replace(/([A-Z])/g, " $1").trim()}
-                      />
-                    ))}
-                  </Group>
-                </Radio.Group>
-              )}
-            />
             <Space h="md" />
             <Controller
-              name="fromId"
+              name="warehouseId"
               control={control}
               rules={{
-                required: "This is field is required",
+                required: "This field is required",
               }}
               render={({ field }) => (
                 <DataSelector
-                  type={getValues("fromType")}
-                  label="From"
-                  placeholder="From"
+                  disabled={!isAdd}
+                  label="Warehouse"
+                  error={errors.warehouseId?.message}
+                  type={PartyType.Warehouse}
+                  placeholder="Warehouse"
                   {...field}
-                  error={errors.fromId?.message}
                   withAsterisk
                 />
               )}
             />
             <Space h="md" />
-            <Controller
-              name="customerId"
-              control={control}
-              rules={{
-                required: "This is field is required",
-              }}
-              render={({ field }) => (
-                <DataSelector
-                  label="Customer"
-                  placeholder="Customer"
-                  {...field}
-                  error={errors.fromId?.message}
-                  type={"CUSTOMER"}
-                  withAsterisk
-                />
-              )}
-            />
-            <Space h="md" />
-            <Controller
-              name="employeeId"
-              control={control}
-              rules={{
-                required: "This is field is required",
-              }}
-              render={({ field }) => (
-                <DataSelector
-                  label="Employee"
-                  placeholder="Employee"
-                  {...field}
-                  error={errors.employeeId?.message}
-                  type={"EMPLOYEE"}
-                  withAsterisk
-                />
-              )}
-            />
-            <Controller
-              name={`discount`}
-              control={control}
-              rules={{
-                min: {
-                  value: 0,
-                  message: "Dsicount must not be less than 0",
+            <TextInput
+              mt="md"
+              label="Vehicle Number"
+              placeholder="Eg: KL 01 AB 1234"
+              disabled={isEditWindow}
+              {...register("vehicleNumber", {
+                required: "This is required",
+                pattern: {
+                  value:
+                    /^[A-Z]{2}[ -][0-9]{1,2}(?: [A-Z])?(?: [A-Z]*)? [0-9]{4}$/,
+                  message: "Vehicle Number is not of valid format",
                 },
+              })}
+              error={errors.vehicleNumber?.message}
+              withAsterisk
+            />
+            <Space h="md" />
+            <Controller
+              name="dateTime"
+              control={control}
+              rules={{
+                required: "This is field is required",
               }}
               render={({ field }) => (
-                <>
-                  <NumberInput
-                    label="Discount"
-                    placeholder="0.0"
-                    precision={2}
-                    step={0.5}
-                    decimalSeparator=","
-                    thousandsSeparator="."
-                    error={errors.discount?.message}
-                    {...field}
-                  />
-                </>
+                <DateTimePicker
+                  label="Date"
+                  placeholder="Date"
+                  disabled={isEditWindow}
+                  popoverProps={{ withinPortal: true }}
+                  icon={<IconCalendar />}
+                  {...field}
+                  onChange={(e) => field.onChange(e?.toISOString())}
+                  value={dayjs.utc(field.value).toDate()}
+                />
               )}
             />
+            <Space h="md" />
+            <TextInput
+              mt="md"
+              label="Invoice Number"
+              placeholder="Invoice Number"
+              disabled={isEditWindow}
+              {...register("invoiceNumber", {
+                required: "This is required",
+              })}
+              error={errors.vehicleNumber?.message}
+              withAsterisk
+            />
+            <Space h="md" />
+            {!isEditWindow ? null : (
+              <ListProducts<LoadInProductItem>
+                keys={[{ key: "quantityFull", label: "Full" }]}
+                items={fields}
+              />
+            )}
+            <Space h="md" />
           </Stepper.Step>
           <Stepper.Step label="Products">
             <ScrollArea h={400} offsetScrollbars>
               {fields.map((field, index) => (
                 <>
-                  <Group mt="xs" key={field.id}>
+                  <Group mt="xs" style={{ gap: 0 }} key={field.id}>
                     <Controller
-                      name={`saleItems.${index}.productId`}
+                      name={`products.${index}.productId`}
                       control={control}
                       rules={{
                         required: "Product must not be empty",
                         validate: (value, formValues) => {
                           console.log(value, formValues);
                           return (
-                            formValues.saleItems.filter(
+                            formValues.products.filter(
                               (e) => e.productId === value
                             ).length === 1 || "Already existing item"
                           );
@@ -242,57 +208,57 @@ function AddEdit(props: AddEditProps) {
                       }}
                       render={({ field }) => (
                         <DataSelector
+                          label="Product"
                           style={{ flexGrow: 1 }}
                           placeholder="Select Product"
                           {...field}
-                          error={
-                            !!errors.saleItems?.[index]?.productId?.message
-                          }
-                          type={"PRODUCT"}
+                          error={!!errors.products?.[index]?.productId?.message}
+                          type="PRODUCT"
                           withAsterisk
                         />
                       )}
                     />
-                    <Flex maw={100} align={"center"}>
+                    <Flex direction={"row"} align={"end"} gap={4}>
                       <Controller
-                        name={`saleItems.${index}.quantity`}
+                        name={`products.${index}.quantityFull`}
                         control={control}
                         rules={{
                           required: "Required",
                           min: {
-                            value: 1,
-                            message: "Qty must not be less than 1",
+                            value: 0,
+                            message: "Empty must not be less than 0",
                           },
                         }}
                         render={({ field }) => (
                           <>
                             <Space h="sm" />
                             <NumberInput
+                              label="Full"
                               placeholder="Qty"
                               error={
-                                !!errors.saleItems?.[index]?.quantity?.message
+                                !!errors.products?.[index]?.quantityFull
+                                  ?.message
                               }
                               {...field}
                             />
                           </>
                         )}
                       />
+                      <ActionIcon
+                        mb={4}
+                        variant="outline"
+                        color="red"
+                        onClick={() => remove(index)}
+                      >
+                        <IconTrashFilled size="1rem" />
+                      </ActionIcon>
                     </Flex>
-                    <ActionIcon
-                      variant="outline"
-                      color="red"
-                      onClick={() => remove(index)}
-                    >
-                      <IconTrashFilled size="1rem" />
-                    </ActionIcon>
                   </Group>
-                  {errors.saleItems?.[index] && (
+
+                  {errors.products?.[index] && (
                     <Text color="red" size="sm" style={{ marginLeft: "4px" }}>
-                      {errors.saleItems?.[index]?.productId &&
-                        errors.saleItems?.[index]?.productId?.message +
-                          " - " +
-                          errors.saleItems?.[index]?.quantity &&
-                        errors.saleItems?.[index]?.quantity?.message}
+                      {errors.products?.[index]?.productId &&
+                        errors.products?.[index]?.productId?.message}
                     </Text>
                   )}
                 </>
@@ -302,10 +268,13 @@ function AddEdit(props: AddEditProps) {
                   type="button"
                   onClick={async (e) => {
                     e.preventDefault();
-                    const result = await trigger("saleItems");
+                    const result = await trigger("products");
                     if (result)
                       append(
-                        { productId: "", quantity: 1 },
+                        {
+                          productId: "",
+                          quantityFull: 1,
+                        },
                         { shouldFocus: true }
                       );
                   }}
@@ -336,7 +305,7 @@ function AddEdit(props: AddEditProps) {
                 onClick={async (e) => {
                   e.preventDefault();
                   const result = await trigger(
-                    ["fromId", "customerId", "employeeId", "fromType"],
+                    ["warehouseId", "vehicleNumber", "invoiceNumber"],
                     {
                       shouldFocus: true,
                     }

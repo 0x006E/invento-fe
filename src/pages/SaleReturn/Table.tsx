@@ -4,23 +4,23 @@ import { IconEdit, IconPlus } from "@tabler/icons-react";
 import { cloneDeep } from "lodash";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useEffect, useState } from "react";
-import { OpeningStock } from "../../api/models/OpeningStock";
-import { PartyType } from "../../api/models/PartyType";
+import { SaleReturn } from "../../api/models";
 import AsyncTitleLoader from "../../components/AsyncTitleLoader/AsyncTitleLoader";
 import FilterByDate from "../../components/FilterByDate";
-import useOpeningStocks from "../../hooks/OpeningStocks";
+import useSaleReturns from "../../hooks/SaleReturns";
+import { formatDate } from "../../util";
 import AddEdit from "./AddEdit";
 
 const PAGE_SIZES = [10, 15, 20];
-const emptyOpeningStock: OpeningStock = {
+const emptysaleReturn: SaleReturn = {
   id: "",
-  partyId: "",
-  partyType: PartyType.Supplier,
-  dayEndId: "",
+  customerId: "",
+  dateTime: new Date().toISOString(),
   items: [],
+  toId: "",
 };
 
-export default function OpeningStocksTable() {
+export default function saleReturnsTable() {
   const [pageSize, setPageSize] = useState(PAGE_SIZES[1]);
   const [page, setPage] = useState(1);
   const [filterDate, setFilterDate] = useState("");
@@ -29,25 +29,24 @@ export default function OpeningStocksTable() {
     columnAccessor: "id",
     direction: "asc",
   });
-  const { openingStocks, add, remove, update } = useOpeningStocks(pageSize);
-  const { data, isFetching, isLoading, isError, refetch, error } =
-    openingStocks(
-      page,
-      enableFilter ? filterDate : "",
-      sortStatus.columnAccessor as keyof OpeningStock,
-      sortStatus.direction
-    );
+  const { saleReturns, add, remove, update } = useSaleReturns(pageSize);
+  const { data, isFetching, isLoading, isError, refetch, error } = saleReturns(
+    page,
+    enableFilter ? filterDate : "",
+    sortStatus.columnAccessor as keyof SaleReturn,
+    sortStatus.direction
+  );
 
   const { mutate: addMutate, isLoading: isAddLoading } = add;
   const { mutate: updateMutate, isLoading: isUpdateLoading } = update;
 
-  const [records, setRecords] = useState<OpeningStock[]>([]);
+  const [records, setRecords] = useState<SaleReturn[]>([]);
   const [open, setOpen] = useState(false);
   const [isAdd, setIsAdd] = useState(true);
-  const [initialValues, setInitialValues] = useState<OpeningStock>(
-    cloneDeep(emptyOpeningStock)
+  const [initialValues, setInitialValues] = useState<SaleReturn>(
+    cloneDeep(emptysaleReturn)
   );
-  const [selectedRecords, setSelectedRecords] = useState<OpeningStock[]>([]);
+  const [selectedRecords, setSelectedRecords] = useState<SaleReturn[]>([]);
 
   useEffect(() => {
     if (data) {
@@ -63,13 +62,13 @@ export default function OpeningStocksTable() {
         (error.cause ? error.cause.message : "Something went wrong"),
       color: "red",
     });
-  const handleAdd = async (values: OpeningStock) => {
+  const handleAdd = async (values: SaleReturn) => {
     setOpen(false);
     addMutate(values, {
       onSuccess: () => {
         showNotification({
           title: "Success",
-          message: "OpeningStock added successfully",
+          message: "Load in item added successfully",
           color: "green",
         });
         refetch();
@@ -83,13 +82,13 @@ export default function OpeningStocksTable() {
       },
     });
   };
-  const handleEdit = async (values: OpeningStock) => {
+  const handleEdit = async (values: SaleReturn) => {
     setOpen(false);
     updateMutate(values, {
       onSuccess: () => {
         showNotification({
           title: "Success",
-          message: "OpeningStock edited successfully",
+          message: "Load in item edited successfully",
           color: "green",
         });
         refetch();
@@ -123,7 +122,7 @@ export default function OpeningStocksTable() {
             sx={{ flexShrink: 0 }}
             onClick={() => {
               setIsAdd(true);
-              setInitialValues({ ...emptyOpeningStock });
+              setInitialValues({ ...emptysaleReturn });
               setOpen(true);
             }}
           >
@@ -145,7 +144,7 @@ export default function OpeningStocksTable() {
         </Flex>
       </Grid>
       <Box sx={{ height: "60vh" }}>
-        <DataTable<OpeningStock>
+        <DataTable<SaleReturn>
           withBorder
           borderRadius="sm"
           withColumnBorders
@@ -165,23 +164,32 @@ export default function OpeningStocksTable() {
           onRecordsPerPageChange={setPageSize}
           columns={[
             {
-              accessor: "partyId",
-              title: "Party Name",
-              render: ({ partyId, partyType }) => (
-                <AsyncTitleLoader id={partyId} type={partyType} />
+              accessor: "customerId",
+              title: "Customer",
+              render: ({ customerId }) => (
+                <AsyncTitleLoader id={customerId} type="CUSTOMER" />
               ),
-              sortable: true,
+              sortable: false,
             },
             {
-              accessor: "partyType",
-              title: "Party Type",
-              render: ({ partyType }) => `${partyType}`,
-              sortable: true,
+              accessor: "toId",
+              title: "To",
+              render: ({ toId }) => (
+                <AsyncTitleLoader id={toId} type={"EMPLOYEE"} />
+              ),
+              sortable: false,
             },
+
             {
               accessor: "items",
               title: "Items",
               render: ({ items }) => `${items.length}`,
+              sortable: false,
+            },
+            {
+              accessor: "dateTime",
+              title: "Date",
+              render: ({ dateTime }) => `${formatDate(dateTime)}`,
               sortable: true,
             },
             // {

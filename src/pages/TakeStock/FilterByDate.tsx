@@ -1,6 +1,7 @@
 import { Switch, Transition } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import { IconCalendar } from "@tabler/icons-react";
+import dayjs from "dayjs";
 import { useState } from "react";
 
 export interface FilterByDateProps {
@@ -27,7 +28,7 @@ function FilterByDate(props: FilterByDateProps) {
             style={styles}
             placeholder="Select date"
             icon={<IconCalendar size={16} />}
-            value={new Date(filterDate)}
+            value={dayjs.utc(filterDate).toDate()}
             onChange={(e) => {
               setFilterDate(e ?? new Date()),
                 onFilterDateChange(e ?? new Date());

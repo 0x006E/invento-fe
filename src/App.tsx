@@ -1,3 +1,4 @@
+"use client";
 import {
   ColorScheme,
   ColorSchemeProvider,
@@ -10,8 +11,10 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
+import "dayjs/locale/en-in";
 import Index from "./Index";
 
+import { DatesProvider } from "@mantine/dates";
 import { ErrorResponse } from "./api/models/ErrorResponse";
 import DependencyProvider from "./components/DependencyProvider";
 import "./reset.css";
@@ -52,8 +55,10 @@ function App() {
             withNormalizeCSS
             theme={{ colorScheme }}
           >
-            <Notifications />
-            <Index />
+            <DatesProvider settings={{ locale: "en-in" }}>
+              <Notifications />
+              <Index />
+            </DatesProvider>
           </MantineProvider>
         </ColorSchemeProvider>
       </QueryClientProvider>
