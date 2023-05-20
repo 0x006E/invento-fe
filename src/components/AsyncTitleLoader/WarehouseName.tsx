@@ -1,5 +1,5 @@
 import { Skeleton } from "@mantine/core";
-import useWarehouses from "../hooks/Warehouses";
+import useWarehouses from "../../hooks/Warehouses";
 
 export interface WarehouseNameProps {
   id: string;

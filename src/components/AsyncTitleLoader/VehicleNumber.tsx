@@ -1,5 +1,5 @@
 import { Skeleton } from "@mantine/core";
-import useVehicles from "../hooks/Vehicles";
+import useVehicles from "../../hooks/Vehicles";
 
 export interface VehicleNumberProps {
   id: string;

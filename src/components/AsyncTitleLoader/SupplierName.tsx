@@ -1,5 +1,5 @@
 import { Skeleton } from "@mantine/core";
-import useSuppliers from "../hooks/Suppliers";
+import useSuppliers from "../../hooks/Suppliers";
 
 export interface SupplierNameProps {
   id: string;
