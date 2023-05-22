@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "${env.API_URL}/api/:path*"
+      "destination": "https://invento.ntsv.eu.org/api/:path*"
     },
     {
       "source": "/api/:path*/",
-      "destination": "${env.API_URL}/api/:path*/"
+      "destination": "https://invento.ntsv.eu.org/api/:path*/"
     },
     { "source": "/(.*)", "destination": "/" }
   ]
