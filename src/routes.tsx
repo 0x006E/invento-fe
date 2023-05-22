@@ -7,6 +7,7 @@ import Home from "./pages/Home/Home";
 import Locations from "./pages/Locations/Locations";
 import OpeningStocks from "./pages/OpeningStock/OpeningStocks";
 import Products from "./pages/Products/Products";
+import ReplaceDefectives from "./pages/ReplaceDefective/ReplaceDefective";
 import SaleReturns from "./pages/SaleReturn/SaleReturn";
 import Sales from "./pages/Sales/Sales";
 import TakeStocks from "./pages/TakeStock/TakeStock";
@@ -54,6 +55,10 @@ const router = createBrowserRouter([
       {
         path: "sales/return",
         element: <SaleReturns />,
+      },
+      {
+        path: "sales/replace-defective",
+        element: <ReplaceDefectives />,
       },
       {
         path: "stock/opening",

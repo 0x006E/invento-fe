@@ -32,7 +32,7 @@ function MainLink({
   initiallyOpened,
 }: MainLinkProps) {
   let resolved = useResolvedPath(to);
-  let match = useMatch({ path: resolved.pathname, end: true });
+  let match = useMatch({ path: resolved.pathname });
 
   let ColoredIcon: React.FC<any> = () => (
     <ThemeIcon color={color} variant="light">

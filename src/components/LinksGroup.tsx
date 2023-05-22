@@ -9,8 +9,8 @@ const useStyles = createStyles((theme) => ({
     textDecoration: "none",
     padding: `${theme.spacing.xs} ${theme.spacing.md}`,
     paddingLeft: rem(15),
-    marginLeft: rem(15),
-    fontSize: theme.fontSizes.sm,
+    marginLeft: rem(5),
+    fontSize: theme.fontSizes.xs,
     color:
       theme.colorScheme === "dark"
         ? theme.colors.dark[0]

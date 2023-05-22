@@ -137,7 +137,7 @@ export class WarehouseLoadInServiceImpl implements WarehouseLoadInService {
     return this._axios.get<PagedResponse<WarehouseLoadIn>>(
       this._endpoint + `/date`,
       {
-        params: { size, page, query, sortColumn, sortDirection },
+        params: { size, page, date: query, sortColumn, sortDirection },
       }
     );
   };

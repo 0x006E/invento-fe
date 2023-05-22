@@ -128,7 +128,7 @@ export class GiveStockServiceImpl implements GiveStockService {
     sortDirection: "asc" | "desc"
   ) => {
     return this._axios.get<PagedResponse<GiveStock>>(this._endpoint + `/date`, {
-      params: { size, page, query, sortColumn, sortDirection },
+      params: { size, page, date: query, sortColumn, sortDirection },
     });
   };
 }

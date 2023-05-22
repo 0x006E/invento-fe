@@ -12,6 +12,7 @@ export * from './OpeningStock';
 export * from './PagedResponse';
 export * from './PartyType';
 export * from './Product';
+export * from './ReplaceDefective';
 export * from './Sale';
 export * from './SaleReturn';
 export * from './Supplier';

@@ -13,6 +13,7 @@ export * from './PagedResponse';
 export * from './PartyType';
 export * from './Product';
 export * from './Sale';
+export * from './SaleReturn';
 export * from './Supplier';
 export * from './TakeStock';
 export * from './TruckDriver';

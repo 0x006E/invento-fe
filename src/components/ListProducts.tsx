@@ -70,6 +70,9 @@ function ListProducts<T extends GenericItem>({
       <tbody>
         {isLoading && rowWrapper(<Loader size={40} />)}
         {isError ? rowWrapper(<>Products load failed</>) : rows}
+        {(!isLoading || !isError) &&
+          items.length === 0 &&
+          rowWrapper(<>No products found</>)}
       </tbody>
     </Table>
   );

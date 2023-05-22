@@ -5,6 +5,7 @@ import {
   Header,
   MediaQuery,
   Navbar,
+  ScrollArea,
   useMantineColorScheme,
   useMantineTheme,
 } from "@mantine/core";
@@ -37,7 +38,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
           hidden={!opened}
           width={{ sm: 250 }}
         >
-          <Navbar.Section grow mt="xs">
+          <Navbar.Section component={ScrollArea} grow mt="xs" offsetScrollbars>
             <MainLinks />
           </Navbar.Section>
           <Navbar.Section>

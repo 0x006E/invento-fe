@@ -128,7 +128,7 @@ export class TakeStockServiceImpl implements TakeStockService {
     sortDirection: "asc" | "desc"
   ) => {
     return this._axios.get<PagedResponse<TakeStock>>(this._endpoint + `/date`, {
-      params: { size, page, query, sortColumn, sortDirection },
+      params: { size, page, date: query, sortColumn, sortDirection },
     });
   };
 }

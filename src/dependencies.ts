@@ -14,6 +14,8 @@ import {
   OpeningStockServiceImpl,
   ProductService,
   ProductServiceImpl,
+  ReplaceDefectiveService,
+  ReplaceDefectiveServiceImpl,
   SaleReturnService,
   SaleReturnServiceImpl,
   SaleService,
@@ -54,6 +56,9 @@ export function setupDependencies() {
   const GiveStockService = new GiveStockServiceImpl(axiosInstance);
   const SaleReturnService = new SaleReturnServiceImpl(axiosInstance);
   const WarehouseLoadInService = new WarehouseLoadInServiceImpl(axiosInstance);
+  const ReplaceDefectiveService = new ReplaceDefectiveServiceImpl(
+    axiosInstance
+  );
   const WarehouseLoadOutService = new WarehouseLoadOutServiceImpl(
     axiosInstance
   );
@@ -112,5 +117,9 @@ export function setupDependencies() {
   context.registerDependency<SaleReturnService>(
     "saleReturnService",
     SaleReturnService
+  );
+  context.registerDependency<ReplaceDefectiveService>(
+    "replaceDefectiveService",
+    ReplaceDefectiveService
   );
 }

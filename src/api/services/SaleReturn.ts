@@ -122,7 +122,7 @@ export class SaleReturnServiceImpl implements SaleReturnService {
     return this._axios.get<PagedResponse<SaleReturn>>(
       this._endpoint + `/date`,
       {
-        params: { size, page, query, sortColumn, sortDirection },
+        params: { size, page, date: query, sortColumn, sortDirection },
       }
     );
   };
